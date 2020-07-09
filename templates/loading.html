@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <script>
+      function navigate() {
+        window.location.href = 'show_image';  // redirect when done!
+      }
+      fetch('show_image').then(navigate); // load the slow url then navigate
+    </script>
+  </head>
+  <body>
+      loading...<br>
+      series_instance_uid: {{series_instance_uid}}<br>
+      task_id: {{task_id}}<br>
+      status: {{status}}<br>
+  </body>
+</html>

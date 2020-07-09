@@ -1,0 +1,11 @@
+flask
+flask-restplus
+celery
+flower
+redis
+gevent
+pyyaml
+numpy
+pandas
+pandas-datareader
+SimpleITK

@@ -1,0 +1,9 @@
+<html>
+    <head>
+    </head>
+    <body>
+        {% for item in mylist %}
+        <a href="{{ url_for('get_image', series_instance_uid=item) }}">{{item}}</a> <br><br>
+        {% endfor %}
+    </body>
+</html>
