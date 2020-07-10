@@ -79,11 +79,8 @@ def taskstatus(task_id):
 
 @app.route('/image/<series_instance_uid>')
 def image(series_instance_uid):
-    print('series_instance_uid',series_instance_uid)
-    task = _get_image.apply_async(args=[series_instance_uid])
-    myinfo = json.dumps({"task_id":task.id,"series_instance_uid":series_instance_uid})
-    session['myinfo'] = myinfo
-    return redirect(url_for('show_image',myinfo=myinfo))
+    # TODO: provide api to get nifti object - base64 encoded string
+    raise NotImplementedError()
 
 @app.route('/get_image/<series_instance_uid>')
 def get_image(series_instance_uid):
@@ -95,7 +92,7 @@ def get_image(series_instance_uid):
 
 @app.route('/show_image')
 def show_image():
-    myinfo = session['myinfo']       # counterpart for session
+    myinfo = session['myinfo']
     myinfo = json.loads(myinfo)
     series_instance_uid = myinfo["series_instance_uid"]
     task_id = myinfo["task_id"]
@@ -108,7 +105,7 @@ def show_image():
             ext=task.get()["ext"],
             base64string=task.get()["base64string"],)
     else:
-        time.sleep(1)
+        time.sleep(1) # TODO: sleep should be at client side
         status = ' '+''.join(random.choice(string.ascii_lowercase) for i in range(10))
         return render_template("loading.html", series_instance_uid=series_instance_uid,task_id=task_id,status=status)
 

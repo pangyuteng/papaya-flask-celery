@@ -2,7 +2,7 @@
     <head>
     </head>
     <body>
-        click on one of the below randomly generate mock series_instance_uid to view a white noise image with Papaya.
+        click on one of the below randomly generate mock series_instance_uid to view a white noise image with Papaya. <br><br>
         {% for item in mylist %}
         <a href="{{ url_for('get_image', series_instance_uid=item) }}">{{item}}</a> <br><br>
         {% endfor %}
