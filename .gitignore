@@ -1,3 +1,4 @@
 __pycache__/*
-static/sample_dicom/*.dcm
-static/sample_dicom/*.nii
+flask/__pycache__/*
+flask/static/sample_dicom/*.dcm
+flask/static/sample_dicom/*.nii
