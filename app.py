@@ -15,7 +15,12 @@ from flask import (
 
 import utils
 
-app = Flask(__name__)
+app = Flask(__name__,
+    static_url_path='', 
+    static_folder='static',
+    template_folder='templates',
+)
+
 app.config["SECRET_KEY"] = "the random string"
 
 def gen_random(num):
@@ -33,13 +38,23 @@ def image(series_instance_uid):
     # TODO: provide api to get nifti object - base64 encoded string
     raise NotImplementedError()
 
-@app.route('/show_image')
-def show_image():
+@app.route('/show_nifti_image')
+def show_nifti_image():
     series_instance_uid = request.args.get('series_instance_uid')
     base64string = utils.get_random_nifti_image_as_base64string()
-    return render_template("show_image.html",
+    return render_template("show_nifti_image.html",
             series_instance_uid=series_instance_uid,
             base64string=base64string,
+    )
+
+
+@app.route('/show_dicom_image')
+def show_dicom_image():
+    series_instance_uid = request.args.get('series_instance_uid')
+    image_list = utils.gen_random_dicom_file_list()
+    return render_template("show_dicom_image.html",
+            series_instance_uid=series_instance_uid,
+            image_list=image_list,
     )
 
 @app.route('/taskstatus/<task_id>')

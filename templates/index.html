@@ -4,7 +4,8 @@
     <body>
         <h2>Examples</h2>
         <br><br>
-        <i><a href="{{ url_for('show_image', series_instance_uid=mylist[0]) }}">+ show nifti image with papaya</a> <br><br></i>
-        
+        <i><a href="{{ url_for('show_nifti_image', series_instance_uid=mylist[0]) }}">+ show nifti image with papaya</a> <br><br></i>
+        <br><br>
+        <i><a href="{{ url_for('show_dicom_image', series_instance_uid=mylist[1]) }}">+ show list of dicom images with papaya</a> <br><br></i>
     </body>
 </html>

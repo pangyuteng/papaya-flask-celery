@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Papaya</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="http://static.jstree.com/3.0.4/assets/dist/themes/default/style.min.css" />
+    <link rel="stylesheet" type="text/css" href="http://rii.uthscsa.edu/mango/papaya/papaya.css?version=0.6.5&build=692" />
+    <script type="text/javascript" src="http://rii.uthscsa.edu/mango/papaya/papaya.js?version=0.6.5&build=692"></script>
+
+    <script type="text/javascript">
+        var params = [];
+        params["images"] = [[{% for item in image_list %}"{{ url_for('static', filename=item)}}",{% endfor %}]];
+        params["ok"]
+    </script>
+
+</head>
+<body>
+    series_instance_uid: {{series_instance_uid}}<br>
+    <div class="papaya" data-params="params"></div>
+</body>
+</html>

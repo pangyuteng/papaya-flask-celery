@@ -19,6 +19,9 @@ passing binary object via celery:
 https://stackoverflow.com/questions/14118526/how-to-serialize-binary-files-to-use-with-a-celery-task
 https://stackoverflow.com/questions/19231389/celery-task-in-flask-for-uploading-and-resizing-images-and-storing-it-to-amazon
 
+# random dicom nifti
+https://stackoverflow.com/questions/14350675/create-pydicom-file-from-numpy-array
+
 
 # keywords: javascript request until result 
 # async call from client side for increased performance

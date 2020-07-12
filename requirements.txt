@@ -11,3 +11,9 @@ pandas
 pandas-datareader
 pydicom
 SimpleITK
+imageio
+scikit-learn
+scikit-image
+scipy
+matplotlib
+seaborn

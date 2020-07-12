@@ -66,69 +66,80 @@ def get_random_nifti_image_as_base64string():
             base64_message = base64_encoded_data.decode('utf-8')
             return base64_message
 
-"""
-from PIL import Image
-resized_img = Image.fromarray(orj_img).resize(size=(new_h, new_w))
+
+from skimage import transform
 import pydicom
 from pydicom.dataset import Dataset, FileDataset
 from pydicom.uid import ExplicitVRLittleEndian
 import pydicom._storage_sopclass_uids
 
+def gen_random_dicom_file_list():
 
-def gen_image_2d():
-    # not so random image
-    np.random
-    image2d = image2d.astype(np.uint16)
+    print("gen_random_dicom_file_list...")
+    StudyInstanceUID = pydicom.uid.generate_uid()
+    SeriesInstanceUID = pydicom.uid.generate_uid()
+    FrameOfReferenceUID = pydicom.uid.generate_uid()
+    os.makedirs("static/sample_dicom",exist_ok=True)
+    file_list = []
+    for index in range(20):
+        
+        instance_number = index+1
 
-    print("Setting file meta information...")
-    # Populate required values for file meta information
+        # not so random image
+        image2d = np.random.rand(128,128)*1000-500
+        image2d = transform.resize(image2d,(512,512),0)
+        image2d = image2d.astype(np.uint16)
 
-    meta = pydicom.Dataset()
-    meta.MediaStorageSOPClassUID = pydicom._storage_sopclass_uids.MRImageStorage
-    meta.MediaStorageSOPInstanceUID = pydicom.uid.generate_uid()
-    meta.TransferSyntaxUID = pydicom.uid.ExplicitVRLittleEndian  
+        # Populate required values for file meta information
+        meta = pydicom.Dataset()
+        meta.MediaStorageSOPClassUID = pydicom._storage_sopclass_uids.CTImageStorage
+        meta.MediaStorageSOPInstanceUID = pydicom.uid.generate_uid()
+        meta.TransferSyntaxUID = pydicom.uid.ExplicitVRLittleEndian  
 
-    ds = Dataset()
-    ds.file_meta = meta
+        ds = Dataset()
+        ds.file_meta = meta
 
-    ds.is_little_endian = True
-    ds.is_implicit_VR = False
+        ds.is_little_endian = True
+        ds.is_implicit_VR = False
 
-    ds.SOPClassUID = pydicom._storage_sopclass_uids.MRImageStorage
-    ds.PatientName = "Test^Firstname"
-    ds.PatientID = "123456"
+        ds.SOPClassUID = pydicom._storage_sopclass_uids.CTImageStorage
+        ds.PatientName = "Test^Firstname"
+        ds.PatientID = "123456"
 
-    ds.Modality = "MR"
-    ds.SeriesInstanceUID = pydicom.uid.generate_uid()
-    ds.StudyInstanceUID = pydicom.uid.generate_uid()
-    ds.FrameOfReferenceUID = pydicom.uid.generate_uid()
+        ds.Modality = "CT"
+        ds.SeriesInstanceUID = SeriesInstanceUID
+        ds.StudyInstanceUID = StudyInstanceUID
+        ds.FrameOfReferenceUID = FrameOfReferenceUID
 
-    ds.BitsStored = 16
-    ds.BitsAllocated = 16
-    ds.SamplesPerPixel = 1
-    ds.HighBit = 15
+        ds.BitsStored = 16
+        ds.BitsAllocated = 16
+        ds.SamplesPerPixel = 1
+        ds.HighBit = 15
 
-    ds.ImagesInAcquisition = "1"
+        #ds.ImagesInAcquisition = "1"
 
-    ds.Rows = image2d.shape[0]
-    ds.Columns = image2d.shape[1]
-    ds.InstanceNumber = 1
+        ds.Rows = image2d.shape[0]
+        ds.Columns = image2d.shape[1]
+        ds.InstanceNumber = f"{instance_number}"
+        ds.SliceLocation = f"{index}"
+        ds.ImagePositionPatient = r"0\0\{}".format(index)
+        ds.ImageOrientationPatient = r"1\0\0\0\1\0\0\0\1"
+        ds.ImageType = r"ORIGINAL\PRIMARY\AXIAL"
 
-    ds.ImagePositionPatient = r"0\0\1"
-    ds.ImageOrientationPatient = r"1\0\0\0\-1\0"
-    ds.ImageType = r"ORIGINAL\PRIMARY\AXIAL"
+        ds.RescaleIntercept = "-1024"
+        ds.RescaleSlope = "1"
+        ds.PixelSpacing = r"1\1"
+        ds.PhotometricInterpretation = "MONOCHROME2"
+        ds.PixelRepresentation = 1
 
-    ds.RescaleIntercept = "0"
-    ds.RescaleSlope = "1"
-    ds.PixelSpacing = r"1\1"
-    ds.PhotometricInterpretation = "MONOCHROME2"
-    ds.PixelRepresentation = 1
+        pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
 
-    pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
+        ds.PixelData = image2d.tobytes()
+        basename = f"sample_dicom/{index}.dcm"
+        ds.save_as(os.path.join("static",basename))
+        file_list.append(basename)
 
-    print("Setting pixel data...")
-    ds.PixelData = image2d.tobytes()
-
-    ds.save_as(r"out.dcm")
-
-"""
+    return file_list
+    
+if __name__ == "__main__":
+    pass
