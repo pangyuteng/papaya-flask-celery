@@ -112,7 +112,7 @@ def gen_random_dicom_file_list():
     FrameOfReferenceUID = pydicom.uid.generate_uid()
     os.makedirs("static/sample_dicom",exist_ok=True)
     file_list = []
-    for index in range(20):
+    for index in range(200):
         
         instance_number = index+1
 

@@ -29,10 +29,14 @@ https://stackoverflow.com/a/36585554/868736
 https://stackoverflow.com/questions/54526371/how-to-poll-a-get-request-until-the-result-is-success-javascript
 https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call/36585554#36585554
 
-# wsgi
+# wsgi + nginx required for static
 https://iximiuz.com/en/posts/flask-gevent-tutorial/
 https://flask.palletsprojects.com/en/1.1.x/deploying/wsgi-standalone/
 https://testdriven.io/blog/dockerizing-flask-with-postgres-gunicorn-and-nginx/
+https://www.patricksoftwareblog.com/how-to-configure-nginx-for-a-flask-web-application/
 
+
+# ml?
+https://towardsdatascience.com/how-to-deploy-ml-models-using-flask-gunicorn-nginx-docker-9b32055b3d0
 
 ```

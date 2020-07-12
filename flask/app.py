@@ -46,11 +46,11 @@ def show_nifti_image():
     series_instance_uid = request.args.get('series_instance_uid')
     base64string, img_file, mask_file = utils.get_random_nifti_image()
     return render_template("show_nifti_image.html",
-            series_instance_uid=series_instance_uid,
-            base64string=base64string, # just trying out this feature...
-            isbase64string=False,
-            img_file=img_file,
-            mask_file=mask_file,
+        series_instance_uid=series_instance_uid,
+        base64string=base64string, # just trying out this feature...
+        isbase64string=False,
+        img_file=img_file,
+        mask_file=mask_file,
     )
 
 
@@ -59,8 +59,8 @@ def show_dicom_image():
     series_instance_uid = request.args.get('series_instance_uid')
     image_list = utils.gen_random_dicom_file_list()
     return render_template("show_dicom_image.html",
-            series_instance_uid=series_instance_uid,
-            image_list=image_list,
+        series_instance_uid=series_instance_uid,
+        image_list=image_list,
     )
 
 @app.route('/taskstatus/<task_id>')
@@ -101,18 +101,11 @@ def segment():
     if return_type == "html":
 
         if task.ready() is True:
-            return render_template("show_results.html", 
-                series_instance_uid=series_instance_uid,
-                task_id=task_id,
-            )
+            return render_template("show_results.html",results=response,)
         else: # for learning redirect html
             time.sleep(1) # TODO: sleep should be at client side
             status = ' '+''.join(random.choice(string.ascii_lowercase) for i in range(10))
-            return render_template("loading.html",
-                series_instance_uid=series_instance_uid,
-                task_id=task_id,
-                status=status,
-            )
+            return render_template("loading.html",results=response,status=status)
 
     else:
         if task.ready() is True:

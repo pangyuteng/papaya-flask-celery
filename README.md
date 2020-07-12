@@ -28,9 +28,13 @@ docker-compose up
 
 ## check out the images with the Papaya viewer that you are now hosting!
 
-+ head over to localhost:5000 and click on one of the mocked links.
++ head over to localhost:5000 and click on the links for demos.
 
-+ Example 1. Show Image.
+    + show Image and mask with Papaya.
+
+    + show volume given a list of dicom images.
+
+
 
 ## motivation & rant
 

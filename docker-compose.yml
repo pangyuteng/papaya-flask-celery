@@ -38,7 +38,7 @@ services:
             - redis
             - rabbitmq
         #command: python app.py
-        #command: gunicorn --bind 0.0.0.0:5000 manage:app
+        #command: gunicorn --workers 6 --bind 0.0.0.0:5000 wsgi:app
         restart: always
         healthcheck:
             test: curl -f http://localhost:5000 || exit 1
