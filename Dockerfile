@@ -1,3 +1,4 @@
+# TODO: ADD VERSIONS TO basefile and requirements.txt
 FROM python
 
 # Copy the package requirements
@@ -10,4 +11,5 @@ RUN pip install -r requirements.txt
 
 COPY . /opt
 
+# prevent container from exiting - useful for development.
 CMD tail -f /dev/null

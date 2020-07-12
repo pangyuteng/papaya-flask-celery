@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Photo Viewer for Local Files and Directories</title>
+	<title>Papaya</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link rel="stylesheet" href="http://static.jstree.com/3.0.4/assets/dist/themes/default/style.min.css" />
@@ -10,8 +10,12 @@
     <script type="text/javascript" src="http://rii.uthscsa.edu/mango/papaya/papaya.js?version=0.6.5&build=692"></script>
 
     <script type="text/javascript">
+        var myimage = "{{base64string}}";
         var params = [];
-        params["encodedImages"] = ["{{base64string}}"];
+        params["encodedImages"] = ["myimage"];
+        params["smoothDisplay"] = false;
+        params["mainView"] = "coronal";
+        
     </script>
 
 </head>

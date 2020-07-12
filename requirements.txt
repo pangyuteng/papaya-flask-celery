@@ -1,5 +1,6 @@
 flask
 flask-restplus
+gunicorn
 celery
 flower
 redis
@@ -8,4 +9,5 @@ pyyaml
 numpy
 pandas
 pandas-datareader
+pydicom
 SimpleITK
