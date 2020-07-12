@@ -9,11 +9,5 @@ https://stackoverflow.com/questions/44735756/python-reading-12-bit-binary-files/
 https://github.com/mrdoob/three.js/blob/dev/examples/models/vtk/bunny.vtk
 
 ```
-wget https://graphics.stanford.edu/data/voldata/bunny-ctscan.tar.gz
-tar -xvf bunny-ctscan.tar.gz
+python download.py
 ```
-
-
-
-```
-
