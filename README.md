@@ -58,4 +58,6 @@ end of rant.
 
 + Add airflow and model traning monitoring...?
 
++ add exmaple for image labeling / semantic seg for submission to amazon mechanical turk?
+
 + Add report generation.
