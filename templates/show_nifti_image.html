@@ -12,7 +12,11 @@
     <script type="text/javascript">
         var myimage = "{{base64string}}";
         var params = [];
+        {% if isbase64string == true %}
         params["encodedImages"] = ["myimage"];
+        {% else %}
+        params["images"] = ["{{ url_for('static', filename=img_file)}}","{{ url_for('static', filename=mask_file)}}",];
+        {% endif %}
         params["smoothDisplay"] = false;
         params["mainView"] = "coronal";
         

@@ -21,51 +21,82 @@ celery = Celery("mycelery", broker=celery_config["broker_url"])
 celery.conf.update(celery_config)
 
 @celery.task()
-def get_random_nifti_image_as_base64string():
+def get_random_nifti_image(return_base64string=False):
+
+    spacing = (5,5,5)
+    origin = (0,0,1)
+    direction = (0,1,0,1,0,0,0,0,1)
+    arr = (np.random.rand(15,15,5)*255).astype(np.uint8)
+    image = sitk.GetImageFromArray(arr)
+    image.SetSpacing(spacing)
+    image.SetOrigin(origin)
+    image.SetDirection(direction)
+
+    #image = sitk.ReadImage(path_to_sitk_image)
+    resample = sitk.ResampleImageFilter()
+    resample.SetInterpolator(sitk.sitkLinear)
+    resample.SetOutputDirection(image.GetDirection())
+    resample.SetOutputOrigin(image.GetOrigin())
+    new_spacing = [0.5,0.5,0.5]
+    resample.SetOutputSpacing(new_spacing)  # needs list of INT!!!
+
+    orig_size = np.array(image.GetSize(), dtype=np.int)
+    orig_spacing = image.GetSpacing()
+    new_size = orig_size*(orig_spacing/np.array(new_spacing))
+    new_size = np.ceil(new_size).astype(np.int)
+    new_size = [int(s) for s in new_size] 
+    resample.SetSize(new_size) # needs list of INT!!!
+
+    newimage = resample.Execute(image)
+    print(new_size)
+
+    use_compression = False
 
     with tempfile.TemporaryDirectory() as tempdir:
 
-        spacing = (5,5,5)
-        origin = (0,0,1)
-        direction = (0,1,0,1,0,0,0,0,1)
-        arr = (np.random.rand(15,15,5)*255).astype(np.uint8)
-        image = sitk.GetImageFromArray(arr)
-        image.SetSpacing(spacing)
-        image.SetOrigin(origin)
-        image.SetDirection(direction)
-
-        #image = sitk.ReadImage(path_to_sitk_image)
-        resample = sitk.ResampleImageFilter()
-        resample.SetInterpolator(sitk.sitkLinear)
-        resample.SetOutputDirection(image.GetDirection())
-        resample.SetOutputOrigin(image.GetOrigin())
-        new_spacing = [0.5,0.5,0.5]
-        resample.SetOutputSpacing(new_spacing)  # needs list of INT!!!
-
-        orig_size = np.array(image.GetSize(), dtype=np.int)
-        orig_spacing = image.GetSpacing()
-        new_size = orig_size*(orig_spacing/np.array(new_spacing))
-        new_size = np.ceil(new_size).astype(np.int)
-        new_size = [int(s) for s in new_size] 
-        resample.SetSize(new_size) # needs list of INT!!!
-
-        newimage = resample.Execute(image)
-        print(new_size)
-
-        use_compression = False
         fpath = os.path.join(tempdir,'img.nii')
 
-        writer = sitk.ImageFileWriter()    
+        writer = sitk.ImageFileWriter()
         writer.SetFileName(fpath)
         writer.SetUseCompression(use_compression)
         writer.Execute(newimage)
-
+        
         with open(fpath,'rb') as f:
             binary_file_data = f.read()
             base64_encoded_data = base64.b64encode(binary_file_data)
             base64_message = base64_encoded_data.decode('utf-8')
-            return base64_message
 
+
+    print(new_size)
+
+    imgname = "sample_dicom/img.nii"
+    maskname = "sample_dicom/mask.nii"
+    tempdir = "static"
+    
+    imgpath = os.path.join(tempdir,imgname)
+    os.makedirs(os.path.dirname(fpath),exist_ok=True)
+
+    writer = sitk.ImageFileWriter()
+    writer.SetFileName(imgpath)
+    writer.SetUseCompression(use_compression)
+    writer.Execute(newimage)
+
+    maskpath = os.path.join(tempdir,maskname)
+    arr = np.zeros(new_size)
+    print(arr.shape)
+    arr[10:30,25:125,25:125]=255
+    arr = arr.astype(np.uint8)
+    mask = sitk.GetImageFromArray(arr)
+    mask.SetSpacing(new_spacing)
+    mask.SetOrigin(origin)
+    mask.SetDirection(direction)
+
+    writer = sitk.ImageFileWriter()    
+    writer.SetFileName(maskpath)
+    writer.SetUseCompression(use_compression)
+    writer.Execute(mask)
+
+    return base64_message, imgname, maskname
 
 from skimage import transform
 import pydicom

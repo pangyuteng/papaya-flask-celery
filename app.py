@@ -33,18 +33,24 @@ def gen_random(num):
 def index():
     return render_template('index.html',mylist=gen_random(10))
 
-@app.route('/image/<series_instance_uid>')
-def image(series_instance_uid):
-    # TODO: provide api to get nifti object - base64 encoded string
+
+@app.route('/dicom_file')
+def dicom_file(series_instance_uid):
+    series_instance_uid = request.args.get('series_instance_uid')
+    instance_number = request.args.get('instance_number')
+
     raise NotImplementedError()
 
 @app.route('/show_nifti_image')
 def show_nifti_image():
     series_instance_uid = request.args.get('series_instance_uid')
-    base64string = utils.get_random_nifti_image_as_base64string()
+    base64string, img_file, mask_file = utils.get_random_nifti_image()
     return render_template("show_nifti_image.html",
             series_instance_uid=series_instance_uid,
-            base64string=base64string,
+            base64string=base64string, # just trying out this feature...
+            isbase64string=False,
+            img_file=img_file,
+            mask_file=mask_file,
     )
 
 

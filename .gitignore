@@ -1,1 +1,3 @@
+__pycache__/*
 static/sample_dicom/*.dcm
+static/sample_dicom/*.nii
