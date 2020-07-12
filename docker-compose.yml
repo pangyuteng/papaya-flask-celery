@@ -26,41 +26,41 @@ services:
             AMQP_URI: amqp://rabbitmq:5672
             REDIS_URI: redis://redis:6379/1
         build:
-            context: .
+            context: ./flask
             dockerfile: Dockerfile
-        image: myimage
+        image: myflask
         volumes:
-           - ${PWD}:/opt
+           - ${PWD}/flask:/opt
         restart: always
         ports:
             - 5000:5000
         links:
             - redis
             - rabbitmq
+        restart: always
         #command: python app.py
         #command: gunicorn --workers 6 --bind 0.0.0.0:5000 wsgi:app
-        restart: always
-        healthcheck:
-            test: curl -f http://localhost:5000 || exit 1
-            interval: 30s
-            timeout: 10s
-            retries: 3
+        # healthcheck:
+        #     test: curl -f http://localhost:5000 || exit 1
+        #     interval: 30s
+        #     timeout: 10s
+        #     retries: 3
     worker:
         environment:
             AMQP_URI: amqp://rabbitmq:5672
             REDIS_URI: redis://redis:6379/1
             C_FORCE_ROOT: "TRUE"
-        image: myimage
+        image: myflask
         # TODO: use seperate compose file, check out 
         # https://docs.docker.com/compose/extends/
         volumes:
-           - ${PWD}:/opt
-        restart: always
+           - ${PWD}/flask:/opt
         links:
             - flask
+        restart: always
         #command: celery worker -A utils.celery --loglevel=INFO --pool=gevent --concurrency=2 --hostname=%h --broker=amqp://rabbitmq:5672
-        healthcheck:
-            test: celery inspect ping -b amqp://rabbitmq:5672 -d celery@$$HOSTNAME
-            interval: 30s
-            timeout: 10s
-            retries: 0
+        # healthcheck:
+        #     test: celery inspect ping -b amqp://rabbitmq:5672 -d celery@$$HOSTNAME
+        #     interval: 30s
+        #     timeout: 10s
+        #     retries: 0

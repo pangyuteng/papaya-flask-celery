@@ -8,7 +8,6 @@ import SimpleITK as sitk
 from celery import Celery
 from celery.result import AsyncResult
 
-
 celery_config = {
     "broker_url": os.environ["AMQP_URI"],
     "result_backend": os.environ["REDIS_URI"],
@@ -21,6 +20,14 @@ celery = Celery("mycelery", broker=celery_config["broker_url"])
 celery.conf.update(celery_config)
 
 @celery.task()
+def long_running_task():
+    raise NotImplementedError()
+
+def get_bunny():
+    ime_file = "bunny/bunny.nii.gz"
+    surface_file = "bunny/bunny.vtk"
+    return ime_file, surface_file
+
 def get_random_nifti_image(return_base64string=False):
 
     spacing = (5,5,5)
@@ -66,7 +73,6 @@ def get_random_nifti_image(return_base64string=False):
             base64_encoded_data = base64.b64encode(binary_file_data)
             base64_message = base64_encoded_data.decode('utf-8')
 
-
     print(new_size)
 
     imgname = "sample_dicom/img.nii"
@@ -74,7 +80,7 @@ def get_random_nifti_image(return_base64string=False):
     tempdir = "static"
     
     imgpath = os.path.join(tempdir,imgname)
-    os.makedirs(os.path.dirname(fpath),exist_ok=True)
+    os.makedirs(os.path.dirname(imgpath),exist_ok=True)
 
     writer = sitk.ImageFileWriter()
     writer.SetFileName(imgpath)
@@ -112,7 +118,7 @@ def gen_random_dicom_file_list():
     FrameOfReferenceUID = pydicom.uid.generate_uid()
     os.makedirs("static/sample_dicom",exist_ok=True)
     file_list = []
-    for index in range(200):
+    for index in range(20):
         
         instance_number = index+1
 

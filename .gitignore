@@ -2,3 +2,4 @@ __pycache__/*
 flask/__pycache__/*
 flask/static/sample_dicom/*.dcm
 flask/static/sample_dicom/*.nii
+flask/static/bunny/*

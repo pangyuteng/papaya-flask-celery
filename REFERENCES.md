@@ -22,12 +22,15 @@ https://stackoverflow.com/questions/19231389/celery-task-in-flask-for-uploading-
 # random dicom nifti
 https://stackoverflow.com/questions/14350675/create-pydicom-file-from-numpy-array
 
-
 # keywords: javascript request until result 
 # async call from client side for increased performance
 https://stackoverflow.com/a/36585554/868736
 https://stackoverflow.com/questions/54526371/how-to-poll-a-get-request-until-the-result-is-success-javascript
 https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call/36585554#36585554
+
+# data cleanup
+# https://stackoverflow.com/questions/13344538/how-to-clean-up-temporary-file-used-with-send-file
+# ^^^ attempt to not use nginx
 
 # wsgi + nginx required for static
 https://iximiuz.com/en/posts/flask-gevent-tutorial/
