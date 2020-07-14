@@ -34,7 +34,7 @@ docker-compose up
 
     + show volume given a list of dicom images.
 
-
+    + simple client side "async await" with axios.
 
 ## motivation & rant
 

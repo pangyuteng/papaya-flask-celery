@@ -1,6 +1,13 @@
 <html>
   <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
     <script>
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -21,7 +28,11 @@
         console.log('ready is true.')
         return task_id;
       }
-      function nextPagePlease(){
+      async function nextPagePlease(){
+        // notify user
+        toastr.info('heading to results page in 2 seconds.')
+        await sleep(2000);
+        // going to next page
         window.location = "{{url_for('task_status',task_id=task_id)}}";
       }
     </script>
