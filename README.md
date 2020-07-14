@@ -63,3 +63,9 @@ end of rant.
 + add exmaple for image labeling / semantic seg for submission to amazon mechanical turk?
 
 + Add report generation.
+
++ unit test case
+
++ cicd
+
++ cicd for model training/testing/version control/updating model weights for inference.
