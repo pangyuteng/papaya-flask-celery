@@ -94,8 +94,8 @@ def show_dicom_image():
         image_list=image_list,
     )
 
-@app.route('/taskstatus/<task_id>')
-def taskstatus(task_id):
+@app.route('/task_status/<task_id>')
+def task_status(task_id):
     task = utils.celery.AsyncResult(task_id)
     response = {'ready': task.ready(),'task_id':task_id}
     if task.ready():
@@ -103,6 +103,13 @@ def taskstatus(task_id):
         return jsonify(response)
     else:
         return jsonify(response)
+
+@app.route('/long_running_task')
+def long_running_task():
+    start_time = time.time()
+    task = utils.long_running_task.apply_async((start_time,))
+    task_id = task.id
+    return render_template("loading.html",task_id=task_id)
 
 @app.route('/segment')
 def segment():

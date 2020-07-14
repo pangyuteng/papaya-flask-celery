@@ -1,6 +1,7 @@
 import os
 import tempfile
 import base64
+import time
 
 import numpy as np
 import SimpleITK as sitk
@@ -20,8 +21,10 @@ celery = Celery("mycelery", broker=celery_config["broker_url"])
 celery.conf.update(celery_config)
 
 @celery.task()
-def long_running_task():
-    raise NotImplementedError()
+def long_running_task(start_time):
+    time.sleep(6.9)
+    end_time = time.time()
+    return {"start_time":start_time,"end_time":end_time}
 
 def get_bunny():
     ime_file = "bunny/bunny.nii.gz"

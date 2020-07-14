@@ -1,16 +1,40 @@
 <html>
   <head>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-      function navigate() {
-        window.location.href = 'show_image';  // redirect when done!
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
       }
-      fetch('show_image').then(navigate); // load the slow url then navigate
+      async function notifyWhenDone() {
+        var task_id=null;
+        var ready=false;
+        while (ready == false){
+            try {
+              const response = await axios.get("{{url_for('task_status',task_id=task_id)}}");
+              console.log(response.data);              
+              await sleep(2000);
+              ready = response.data.ready;
+            } catch(error) {
+              console.log(error);
+            }
+        }
+        console.log('ready is true.')
+        return task_id;
+      }
+      function nextPagePlease(){
+        window.location = "{{url_for('task_status',task_id=task_id)}}";
+      }
     </script>
   </head>
-  <body>
-      loading...<br>
-      series_instance_uid: {{series_instance_uid}}<br>
+  <body onload="notifyWhenDone().then(res=>nextPagePlease());">
+      long running task<br>
       task_id: {{task_id}}<br>
-      status: {{status}}<br>
+      <a href="{{url_for('task_status',task_id=task_id)}}">task_status</a>
   </body>
 </html>
+
+<!--
+https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep/39914235#39914235
+https://stackoverflow.com/questions/49661209/get-response-from-axios-with-await-async/49661388#49661388
+https://stackoverflow.com/questions/49601795/making-redirects-after-an-axios-post-request-with-express
+-->
