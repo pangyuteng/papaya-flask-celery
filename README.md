@@ -36,6 +36,8 @@ docker-compose up
 
     + simple client side "async await" with axios.
 
+    + show tabular data
+
 ## motivation & rant
 
 As a person with a non cs background and being in a rather isolated field from web development - biomedical-image-processing (computer-vision, medical imaging, biology), I cringe alot when dealing with "web stuff"... especially looking at java script, arrhhghhh, somehow the syntax just gets to me, maybe because it resembles java, but then it also wants not to be too verbose, and to make it less verbose, it now seems a bit cryptic, the cryptic get more "crytpier" once you add on async logics... as I make up excuses and try very hard to avoid it... at the same time, I am also amazed at the pace it evolves and how it kept on building upon or trumping other tech stacks, from static html, css, flash, then ajax, angular, react.  These days, even tensoflow have a js version. Gotta give respect to the people building these tools, dealing with the ever changing tech stack, plus the attention to detail and patience required to build a functional, customized, usable, sleek, and reliable web-based gui.
