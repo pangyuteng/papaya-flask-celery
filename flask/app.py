@@ -97,7 +97,8 @@ def show_dicom_image():
 @app.route('/task_status/<task_id>')
 def task_status(task_id):
     task = utils.celery.AsyncResult(task_id)
-    response = {'ready': task.ready(),'task_id':task_id}
+    random_char = ' '+''.join(random.choice(string.ascii_lowercase) for i in range(10))
+    response = {'ready': task.ready(),'task_id':task_id,'random_char':random_char}
     if task.ready():
         response["result"]=task.get()
         return jsonify(response)
@@ -110,6 +111,11 @@ def long_running_task():
     task = utils.long_running_task.apply_async((start_time,))
     task_id = task.id
     return render_template("loading.html",task_id=task_id)
+
+@app.route('/show_table')
+def show_table():
+    df = utils.get_table()
+    return render_template("show_table.html",table=df.to_html(header="true", table_id="example"))
 
 @app.route('/segment')
 def segment():
@@ -141,9 +147,7 @@ def segment():
         if task.ready() is True:
             return render_template("show_results.html",results=response,)
         else: # for learning redirect html
-            time.sleep(1) # TODO: sleep should be at client side
-            status = ' '+''.join(random.choice(string.ascii_lowercase) for i in range(10))
-            return render_template("loading.html",results=response,status=status)
+            return render_template("loading.html",task_id=task_id)
 
     else:
         if task.ready() is True:

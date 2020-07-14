@@ -3,6 +3,7 @@ import tempfile
 import base64
 import time
 
+import pandas as pd
 import numpy as np
 import SimpleITK as sitk
 
@@ -25,6 +26,16 @@ def long_running_task(start_time):
     time.sleep(6.9)
     end_time = time.time()
     return {"start_time":start_time,"end_time":end_time}
+
+def get_table():
+    mylist = []
+    for i in range(100):
+        row = {}
+        for n,x in enumerate(np.random.randint(0,1000,10)):
+            row[n]=x
+        mylist.append(row)
+    df = pd.DataFrame(mylist)
+    return df
 
 def get_bunny():
     ime_file = "bunny/bunny.nii.gz"
