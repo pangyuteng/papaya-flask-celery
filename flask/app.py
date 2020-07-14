@@ -115,7 +115,10 @@ def long_running_task():
 @app.route('/show_table')
 def show_table():
     df = utils.get_table()
-    return render_template("show_table.html",table=df.to_html(header="true", table_id="example"))
+    return render_template("show_table.html",table=df.to_html(
+        index=False,header="true",
+        classes="display",table_id="example",border=0))
+        # ^^^ override default kwags so DataTable css can take over look and feel.
 
 @app.route('/segment')
 def segment():
