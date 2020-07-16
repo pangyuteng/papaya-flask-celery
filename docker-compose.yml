@@ -58,7 +58,7 @@ services:
         links:
             - flask
         restart: always
-        #command: celery worker -A utils.celery --loglevel=INFO --pool=gevent --concurrency=2 --hostname=%h --broker=amqp://rabbitmq:5672
+        #command: bash worker.sh
         # healthcheck:
         #     test: celery inspect ping -b amqp://rabbitmq:5672 -d celery@$$HOSTNAME
         #     interval: 30s

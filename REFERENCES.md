@@ -38,6 +38,14 @@ https://flask.palletsprojects.com/en/1.1.x/deploying/wsgi-standalone/
 https://testdriven.io/blog/dockerizing-flask-with-postgres-gunicorn-and-nginx/
 https://www.patricksoftwareblog.com/how-to-configure-nginx-for-a-flask-web-application/
 
+# visualization
+
+## offscreen 3d render with vtk
+https://github.com/pyvista/pyvista/issues/155
+https://docs.pyvista.org/getting-started/installation.html
+https://gist.github.com/pangyuteng/cf6345c4e5f8f77756064e4de9ef76c7
+https://gist.github.com/pangyuteng/facd430d0d9761fc67fff4ff2e5fffc3
+
 
 # ml?
 https://towardsdatascience.com/how-to-deploy-ml-models-using-flask-gunicorn-nginx-docker-9b32055b3d0

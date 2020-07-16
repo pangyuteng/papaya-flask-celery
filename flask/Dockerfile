@@ -1,6 +1,8 @@
 # TODO: ADD VERSIONS TO basefile and requirements.txt
 FROM python
 
+RUN apt-get update -y; apt-get install -y libgl1-mesa-dev xvfb
+
 # Copy the package requirements
 COPY requirements.txt /opt
 

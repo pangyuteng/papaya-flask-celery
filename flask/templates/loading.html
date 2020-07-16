@@ -7,8 +7,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    
+
     <script>
+
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -17,8 +18,9 @@
         var ready=false;
         while (ready == false){
             try {
+              toastr.info('checking with server to see if done.')
               const response = await axios.get("{{url_for('task_status',task_id=task_id)}}");
-              console.log(response.data);              
+              console.log(response.data);
               await sleep(2000);
               ready = response.data.ready;
             } catch(error) {
