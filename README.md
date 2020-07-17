@@ -9,16 +9,6 @@ For now this is a hello world project that demonstrates how to view nifti images
 
 + Celery is used for long running tasks on the server end (for image processing people, that means... segmentation, quantification!)
 
-+ likely TODOs to demo a "minimal tech stack" that can do all things ml via a REST api: data import, model training, inference, export and visualization of quantified data.  This is likely an over kill / over engineered project.  I'm sure there are many commercial sites that are already doing all this but with a very very polished frontend...
-
-    + authenticaion
-    + data access abtraction
-    + mongodb
-    + file storage
-    + single/batch data import export capability? via celery.
-    + batch export of quantified data.
-    + case report generation
-
 Papaya - https://github.com/rii-mango/Papaya
 
 Flask - https://github.com/pallets/flask
@@ -28,6 +18,25 @@ Gunicorn - https://gunicorn.org
 Celery - https://github.com/celery/celery
 
 Docker - https://www.docker.com
+
++ likely TODOs to demo a "minimal tech stack" that can do all things ml via a REST api: data import, model training, inference, export and visualization of quantified data.  This is likely an over kill / over engineered project.  That said, I'm sure there are many commercial sites that are already doing all this but with a very very polished frontend...and they will be charging you hundreds if not thousands per month for this service. 
+
+    + authenticaion
+    + data access abtraction
+    + mongodb
+    + file storage
+    + single/batch data import export capability? via celery.
+    + batch export of quantified data.
+    + case report generation
+
+
++ After just a few minutes spent on google, below are the sites that are already doing what this project wants to be...
+
+    + https://teachablemachine.withgoogle.com
+    + https://cloud.google.com/solutions/build-and-use-ai
+    + https://aws.amazon.com/machine-learning/ai-services/
+    + https://azure.microsoft.com/en-us/services/machine-learning/
+    + https://deepcognition.ai/features/deep-learning-studio/
 
 
 ## build with docker, then start Flask and underlying services.
