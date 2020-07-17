@@ -1,12 +1,23 @@
-# papaya-flask-celery
+## the project name may change...
 
-A hello world project that demonstrates how to view nifti images by leveraging papaya, flask and celery.  
+
+For now this is a hello world project that demonstrates how to view nifti images by leveraging papaya, flask and celery.  
 
 + Papaya is used for viewing images
 
 + Flask is used for REST API and serving static pages
 
 + Celery is used for long running tasks on the server end (for image processing people, that means... segmentation, quantification!)
+
++ likely TODOs to demo a "minimal tech stack" that can do all things ml via a REST api: data import, model training, inference, export and visualization of quantified data.  This is likely an over kill / over engineered project.  I'm sure there are many commercial sites that are already doing all this but with a very very polished frontend...
+
+    + authenticaion
+    + data access abtraction
+    + mongodb
+    + file storage
+    + single/batch data import export capability? via celery.
+    + batch export of quantified data.
+    + case report generation
 
 Papaya - https://github.com/rii-mango/Papaya
 
