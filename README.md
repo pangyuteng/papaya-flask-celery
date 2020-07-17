@@ -19,26 +19,6 @@ Celery - https://github.com/celery/celery
 
 Docker - https://www.docker.com
 
-+ likely TODOs to demo a "minimal tech stack" that can do all things ml via a REST api: data import, model training, inference, export and visualization of quantified data.  This is likely an over kill / over engineered project.  That said, I'm sure there are many commercial sites that are already doing all this but with a very very polished frontend...and they will be charging you hundreds if not thousands per month for this service. 
-
-    + authenticaion
-    + data access abtraction
-    + mongodb
-    + file storage
-    + single/batch data import export capability? via celery.
-    + batch export of quantified data.
-    + case report generation
-
-
-+ After just a few minutes spent on google, below are the sites that are already doing what this project wants to be...
-
-    + https://teachablemachine.withgoogle.com
-    + https://cloud.google.com/solutions/build-and-use-ai
-    + https://aws.amazon.com/machine-learning/ai-services/
-    + https://azure.microsoft.com/en-us/services/machine-learning/
-    + https://deepcognition.ai/features/deep-learning-studio/
-
-
 ## build with docker, then start Flask and underlying services.
 
 ```
@@ -70,19 +50,43 @@ end of rant.
 
 ## maybe TODOS for this project, if it doesn't die out like covid.
 
++ to have a "minimal tech stack" that can do "all things machine learning" via REST api: data import, model training, inference, export and visualization of quantified data.  This is likely an over kill / over engineered project.  That said, I'm sure there are many commercial sites that are already doing all this but with a very very polished frontend...and they will be charging you hundreds if not thousands per month for this service. 
+
++ After just a few minutes spent on google, below are the sites that are already doing what this project wants to be...
+
+    + https://teachablemachine.withgoogle.com
+    + https://cloud.google.com/solutions/build-and-use-ai
+    + https://aws.amazon.com/machine-learning/ai-services/
+    + https://azure.microsoft.com/en-us/services/machine-learning/
+    + https://deepcognition.ai/features/deep-learning-studio/
+
+
+
++ all things ML stack
+    + [x] docker
+    + [x] rest api front - flask
+    + [x] async trigger long running task - celery/rabbitmq/redis
+    + [x] 2d, 3d visualization - Papaya
+    + [ ] authenticaion
+    + [ ] data access abtraction
+    + [ ] mongodb
+    + [ ] file storage
+    + [ ] enable drag and drop import & store & retrive data
+    + [ ] batch data import export capability? via celery.
+    + [ ] batch export of quantified data.
+    + [ ] case report generation
+    + [ ] scaling with wsgi for http and nginx for static files.
+    + [ ] create aws friendly docker-compose file to claim project is "in the cloud".
+
 + client side async - get a list of dicom files quickly and render in papaya.
   
 + server side async - user triggers segmentation with mouse click location, once process is complete, client side gets updated.
 
-+ Add MongoDB & File Storage ( enable drag and drop import & store & retrive data)
++ add airflow and model traning monitoring...?
 
-+ Add authentication
++ add example for image labeling / semantic segmentation data label html for submission to amazon mechanical turk? to create labeled dataset
 
-+ Add airflow and model traning monitoring...?
-
-+ add exmaple for image labeling / semantic seg for submission to amazon mechanical turk?
-
-+ Add report generation.
++ add report generation.
 
 + unit test case
 
