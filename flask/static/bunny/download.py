@@ -16,10 +16,13 @@ if not os.path.exists('bunny.nii.gz'):
 
     img = np.zeros((512,512,361))
     for i in np.arange(1,362,1):
-        tmp = np.fromfile(f'bunny/{i}',dtype='int16',sep='')
+        tmp = np.fromfile(f'bunny/{i}',dtype='uint16',sep='')
+        #Max 16 bit = 65535
+        #Max 12 bit = 4095
+        tmp = np.round(tmp/65535*4095)
         tmp = tmp.reshape(512,512)
         img[:,:,i-1]=tmp
-    img = img.astype(np.int16)
+    img = img.astype(np.uint16)
 
     image = sitk.GetImageFromArray(img)
 

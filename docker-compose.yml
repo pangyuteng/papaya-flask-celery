@@ -21,6 +21,14 @@ services:
             - rabbitmq
         command: flower --address=* --port=5555 --broker=amqp://rabbitmq:5672
         restart: always
+        #jupyter:
+        # image: myimage
+        #ports:
+        #    - 8888:8888
+        #command: jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root
+        #restart: always
+        #volumes:
+        #    - ${PWD}/flask:/opt
     flask:
         environment:
             AMQP_URI: amqp://rabbitmq:5672
@@ -34,6 +42,7 @@ services:
         restart: always
         ports:
             - 5000:5000
+            - 8888:8888
         links:
             - redis
             - rabbitmq
