@@ -94,6 +94,15 @@ def show_dicom_image():
         image_list=image_list,
     )
 
+@app.route('/show_bunny_dicom_image')
+def show_bunny_dicom_image():
+    series_instance_uid = request.args.get('series_instance_uid')
+    image_list = utils.gen_rabbit_dicom_file_list()
+    return render_template("show_dicom_image.html",
+        series_instance_uid=series_instance_uid,
+        image_list=image_list,
+    )
+
 @app.route('/task_status/<task_id>')
 def task_status(task_id):
     task = utils.celery.AsyncResult(task_id)

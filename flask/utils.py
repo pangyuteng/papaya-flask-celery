@@ -1,7 +1,10 @@
 import os
 import tempfile
+import subprocess
 import base64
 import time
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 import pandas as pd
 import numpy as np
@@ -41,6 +44,8 @@ def get_bunny():
     ime_file = "bunny/bunny.nii.gz"
     surface_file = "bunny/bunny.vtk"
     return ime_file, surface_file
+
+
 
 def get_random_nifti_image(return_base64string=False):
 
@@ -125,21 +130,29 @@ from pydicom.uid import ExplicitVRLittleEndian
 import pydicom._storage_sopclass_uids
 
 def gen_random_dicom_file_list():
+    folder_path = os.path.join(THIS_DIR,"static","sample_dicom")
+    os.makedirs(folder_path,exist_ok=True)
+
+    image3d = np.random.rand(20,128,128)*1000-500
+    image3d = transform.resize(image3d,(20,512,512),0)
+    image3d = image3d.astype(np.uint16)
+
+    return gen_dicom_file_list(image3d,folder_path)
+
+def gen_dicom_file_list(image3d,folder_path):
+
+    sizez = image3d.shape[0]
 
     print("gen_random_dicom_file_list...")
     StudyInstanceUID = pydicom.uid.generate_uid()
     SeriesInstanceUID = pydicom.uid.generate_uid()
     FrameOfReferenceUID = pydicom.uid.generate_uid()
-    os.makedirs("static/sample_dicom",exist_ok=True)
+
     file_list = []
-    for index in range(20):
+    for index in range(sizez):
         
         instance_number = index+1
-
-        # not so random image
-        image2d = np.random.rand(128,128)*1000-500
-        image2d = transform.resize(image2d,(512,512),0)
-        image2d = image2d.astype(np.uint16)
+        image2d = image3d[index,:,:].squeeze()
 
         # Populate required values for file meta information
         meta = pydicom.Dataset()
@@ -186,11 +199,155 @@ def gen_random_dicom_file_list():
         pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
 
         ds.PixelData = image2d.tobytes()
-        basename = f"sample_dicom/{index}.dcm"
-        ds.save_as(os.path.join("static",basename))
-        file_list.append(basename)
+
+        file_path = os.path.join(folder_path,f"{index}.dcm")
+        print(file_path)
+
+        ds.save_as(file_path)
+
+        STATIC_FOLDER = os.path.join(THIS_DIR,"static")
+        rel_path = os.path.relpath(file_path,STATIC_FOLDER)
+
+        file_list.append(rel_path)
 
     return file_list
+
+class cd:
+    """Context manager for changing the current working directory"""
+    def __init__(self, newPath):
+        self.newPath = os.path.expanduser(newPath)
+
+    def __enter__(self):
+        self.savedPath = os.getcwd()
+        os.chdir(self.newPath)
+
+    def __exit__(self, etype, value, traceback):
+        os.chdir(self.savedPath)
+
+def gen_rabbit_dicom_file_list():
+    p_list = []
+    for i in range(361):
+        p = os.path.join('bunny','dcm',f'{i+1}.dcm')
+        p_list.append(p)
+    return p_list
+
+@celery.task()
+def download_bunny():
+
+    tempdir = os.path.join(THIS_DIR,'static','bunny')
+    os.makedirs(tempdir,exist_ok=True)
+    with cd(tempdir):
+
+        if not os.path.exists('bunny-ctscan.tar.gz'):
+            subprocess.call(['wget','https://graphics.stanford.edu/data/voldata/bunny-ctscan.tar.gz'])
+        if not os.path.exists('bunny'):
+            subprocess.call(['tar','-xzvf','bunny-ctscan.tar.gz'])
+        print('here')
+        img = np.zeros((512,512,361))
+        for i in np.arange(1,362,1):
+            tmp = np.fromfile(f'bunny/{i}',dtype='uint16',sep='')
+            #Max 16 bit = 65535
+            #Max 12 bit = 4095
+            tmp = np.round(tmp/65535*4095)
+            tmp = tmp.reshape(512,512)
+            img[:,:,i-1]=tmp
+        img = img.astype(np.uint16)
+
+        image = sitk.GetImageFromArray(img)
+
+        direction = (0,1,0,1,0,0,0,0,1)
+        origin = (0,0,1)
+        spacing = (1,1,1)
+
+        image.SetSpacing(spacing)
+        image.SetOrigin(origin)
+        image.SetDirection(direction)
+
+        writer = sitk.ImageFileWriter()
+        writer.SetFileName('bunny.nii.gz')
+        writer.SetUseCompression(True)
+        writer.Execute(image)
+
+    print('download done')
+    # save as dcm
+    dcm_folder_path = os.path.join(THIS_DIR,"static","bunny","dcm")
+    os.makedirs(dcm_folder_path,exist_ok=True)
+
+    folder_path = os.path.join(THIS_DIR,"static","bunny")
+    img = np.zeros((512,512,361))
+    for i in np.arange(1,362,1):
+        filepath = os.path.join(folder_path,"bunny",f'{i}')
+        tmp = np.fromfile(filepath,dtype='uint16',sep='')
+        #Max 16 bit = 65535
+        #Max 12 bit = 4095
+        tmp = np.round(tmp/65535*4095)
+        tmp = tmp.reshape(512,512)
+        img[:,:,i-1]=tmp
+    img = img.astype(np.uint16)
     
+    img_list = gen_dicom_file_list(img,dcm_folder_path)
+    return {"img_list":img_list}
+
+@celery.task()
+def render_bunny_isosurface():
+
+    tempdir = os.path.join(THIS_DIR,'static','bunny')
+    os.makedirs(tempdir,exist_ok=True)
+    with cd(tempdir):
+
+        # downn sample !!!
+        if not os.path.exists('bunny.vtk'):
+            import vtk
+
+            reader = vtk.vtkNIFTIImageReader()
+            reader.SetFileName('bunny.nii.gz')
+            reader.Update()
+
+            threshold = vtk.vtkImageThreshold ()
+            threshold.SetInputConnection(reader.GetOutputPort())
+            threshold.ThresholdByLower(2000)  #th
+            threshold.ReplaceInOn()
+            threshold.SetInValue(0)  # set all values below th to 0
+            threshold.ReplaceOutOn()
+            threshold.SetOutValue(1)  # set all values above th to 1
+            threshold.Update()
+
+            dmc = vtk.vtkDiscreteMarchingCubes()
+            dmc.SetInputConnection(threshold.GetOutputPort())
+            dmc.GenerateValues(1, 1, 1)
+            dmc.Update()
+
+            mapper = vtk.vtkPolyDataMapper()
+            mapper.SetInputConnection(dmc.GetOutputPort())
+            mapper.Update()
+
+            smooth = vtk.vtkSmoothPolyDataFilter()
+            smooth.SetInputConnection(dmc.GetOutputPort())
+            smooth.SetNumberOfIterations(100)
+            smooth.SetRelaxationFactor(1)
+            smooth.Update()
+
+            writer = vtk.vtkPolyDataWriter()
+            writer.SetInputData(smooth.GetOutput())
+            writer.SetFileName('bunny.vtk')
+            writer.Write()
+
+            '''
+            writer = vtk.vtkPLYWriter()
+            writer.SetInputConnection(dmc.GetOutputPort())
+            writer.SetFileName('bunny.ply')
+            writer.Write()
+
+            writer = vtk.vtkSTLWriter()
+            writer.SetInputConnection(dmc.GetOutputPort())
+            writer.SetFileTypeToBinary()
+            writer.SetFileName("bunny.stl")
+            writer.Write()
+            '''
+        #http://vtk.1045678.n5.nabble.com/How-to-write-vtkDelaunay3D-into-vtk-file-td5741818.html
+        #https://gist.github.com/pangyuteng/facd430d0d9761fc67fff4ff2e5fffc3
+
 if __name__ == "__main__":
+    #download_bunny()
+    #gen_rabbit_dicom_file_list()
     pass
