@@ -32,6 +32,9 @@ https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-a
 # https://stackoverflow.com/questions/13344538/how-to-clean-up-temporary-file-used-with-send-file
 # ^^^ attempt to not use nginx
 
+# login
+https://github.com/maxcountryman/flask-login
+
 # wsgi + nginx required for static
 https://iximiuz.com/en/posts/flask-gevent-tutorial/
 https://flask.palletsprojects.com/en/1.1.x/deploying/wsgi-standalone/

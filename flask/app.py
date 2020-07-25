@@ -51,7 +51,6 @@ def gen_random(num):
     return mylist
 
 
-# https://github.com/maxcountryman/flask-login
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
