@@ -1,5 +1,6 @@
 flask
 flask-restplus
+flask-login
 gunicorn
 celery
 flower

@@ -58,7 +58,7 @@ services:
         environment:
             AMQP_URI: amqp://rabbitmq:5672
             REDIS_URI: redis://redis:6379/1
-            C_FORCE_ROOT: "TRUE"
+            C_FORCE_ROOT: true
         image: myflask
         # TODO: use seperate compose file, check out 
         # https://docs.docker.com/compose/extends/
