@@ -10,8 +10,18 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
   </head>
   summary_dict <br>
-  {{summary_dict}} <br>
-  <i><a href="{{ url_for('table_csv', project_id='-1') }}">download</a> <br>
+  <table>
+  {% for k,v in summary_dict.items() %}
+  <tr>
+  <th>{{k}}</th><td>{{v}}</td>
+  </tr>
+  {% endfor %}
+  <tr><td>
+    <a href="{{ url_for('table_csv', project_id='-1') }}">download</a> <br><br>
+  </td></tr>
+  </table>
+  <br>
+
   <body>
     {{table|safe}}
   </body>
