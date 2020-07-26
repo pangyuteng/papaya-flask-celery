@@ -30,15 +30,10 @@ def long_running_task(start_time):
     end_time = time.time()
     return {"start_time":start_time,"end_time":end_time}
 
-def get_table():
-    mylist = []
-    for i in range(100):
-        row = {}
-        for n,x in enumerate(np.random.randint(0,1000,10)):
-            row[n]=x
-        mylist.append(row)
-    df = pd.DataFrame(mylist)
-    return df
+def get_state(project_id):
+    from misc.state import get_state_summary
+    summary_dict, state_df = get_state_summary(project_id)
+    return summary_dict, state_df
 
 def get_bunny():
     ime_file = "bunny/bunny.nii.gz"
@@ -346,6 +341,7 @@ def render_bunny_isosurface():
             '''
         #http://vtk.1045678.n5.nabble.com/How-to-write-vtkDelaunay3D-into-vtk-file-td5741818.html
         #https://gist.github.com/pangyuteng/facd430d0d9761fc67fff4ff2e5fffc3
+
 
 if __name__ == "__main__":
     #download_bunny()
