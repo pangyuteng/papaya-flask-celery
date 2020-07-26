@@ -7,9 +7,10 @@ import json
 import time
 import random
 import string
+import datetime
 
 from flask import (
-    Flask, request, render_template, 
+    Flask, request, render_template, Response,
     session, flash, redirect, url_for, jsonify,
     send_file
 )
@@ -190,6 +191,24 @@ def long_running_task():
     task = utils.long_running_task.apply_async((start_time,))
     task_id = task.id
     return render_template("loading.html",task_id=task_id)
+
+# https://stackoverflow.com/questions/30024948/flask-download-a-csv-file-on-clicking-a-button
+@app.route("/table_csv")
+def table_csv():
+    project_id = int(request.args.get('project_id'))
+    summary_dict, df = utils.get_state(project_id)
+    with tempfile.TemporaryDirectory() as tempdir:
+        filepath = os.path.join(tempdir,'out.csv')
+        df.to_csv(filepath,index=False)
+        with open(filepath,'r') as f:
+            csv_txt = f.read()
+
+    tstamp = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    return Response(
+        csv_txt,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                 f"attachment; filename={tstamp}.csv"})
 
 @app.route('/show_table')
 def show_table():

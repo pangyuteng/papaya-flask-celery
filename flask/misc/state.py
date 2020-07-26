@@ -26,7 +26,7 @@ done = 'done'
 
 # random data
 def query_raw_data(project_id):
-    sample_size = np.random.randint(300,3000,1)[0]
+    sample_size = np.random.randint(3000,30000,1)[0]
     df = pd.DataFrame(np.random.rand(sample_size,10))
     df['id']=list(df.index)
     return df

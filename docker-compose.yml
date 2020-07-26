@@ -48,7 +48,7 @@ services:
             - rabbitmq
         restart: always
         command: python app.py
-        command: gunicorn --workers 6 --bind 0.0.0.0:5000 wsgi:app
+        #command: gunicorn --workers 6 --bind 0.0.0.0:5000 wsgi:app
         healthcheck:
             test: curl -f http://localhost:5000 || exit 1
             interval: 30s

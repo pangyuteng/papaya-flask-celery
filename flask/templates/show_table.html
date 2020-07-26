@@ -1,17 +1,27 @@
 <html>
   <head>
+    <style>
+      body {
+        display:none;
+      }
+      </style>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css"/>  
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
   </head>
   summary_dict <br>
   {{summary_dict}} <br>
+  <i><a href="{{ url_for('table_csv', project_id='-1') }}">download</a> <br>
   <body>
     {{table|safe}}
   </body>
   <script>
     $(document).ready(function() {
+    $('#example').hide();
     $('#example').DataTable();
+    $('#example').show();
+    $('body').fadeIn(1000);
+
     } );
   </script>
 </html>
