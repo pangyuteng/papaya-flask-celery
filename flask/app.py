@@ -59,7 +59,7 @@ class User(flask_login.UserMixin):
     pass
 
 users = {
-    'test@gmail.com':{'password':'password'},
+    'guest':{'password':'guest'},
 }
 @login_manager.user_loader
 def user_loader(email):
@@ -85,8 +85,8 @@ def request_loader(request):
 
     return user
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/loginPLAIN', methods=['GET', 'POST'])
+def loginPLAIN():
     if flask.request.method == 'GET':
         return '''
                <form action='login' method='POST'>
@@ -98,6 +98,21 @@ def login():
 
     email = flask.request.form['email']
     if flask.request.form['password'] == users[email]['password']:
+        user = User()
+        user.id = email
+        flask_login.login_user(user)
+        return flask.redirect(flask.url_for('protected'))
+
+    return 'Bad login'
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if flask.request.method == 'GET':
+        return render_template('login.html')
+    print(flask.request.form)
+    email = flask.request.form['email']
+
+    if email in users.keys() and flask.request.form['password'] == users[email]['password']:
         user = User()
         user.id = email
         flask_login.login_user(user)
