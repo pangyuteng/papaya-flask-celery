@@ -140,14 +140,16 @@ def index():
 
 file_remover = FileRemover()
 @app.route('/dicom_file')
-def dicom_file(series_instance_uid):
+def dicom_file():
     series_instance_uid = request.args.get('series_instance_uid')
     instance_number = request.args.get('instance_number')
     tempdir = tempfile.mkdtemp()
-    filepath = make_the_data(dir_to_put_file_in=tempdir)
-    resp = send_file(filepath)
+    src = os.path.join('static','sample_dicom',f'{instance_number}.dcm')
+    tgt = os.path.join(tempdir,f'{instance_number}.dcm')
+    shutil.copy(src,tgt)
+    resp = send_file(tgt)
     file_remover.cleanup_once_done(resp, tempdir)
-    return resp    
+    return resp
 
 @app.route('/show_surface')
 def show_surface():
@@ -178,6 +180,11 @@ def show_dicom_image():
     return render_template("show_dicom_image.html",
         series_instance_uid=series_instance_uid,
         image_list=image_list,
+    )
+@app.route('/show_dicom_image_non_static')
+def show_dicom_image_non_static():
+    return render_template("show_dicom_image_non_static.html",
+        series_instance_uid='abc',
     )
 
 @app.route('/show_bunny_dicom_image')
