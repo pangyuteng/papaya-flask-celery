@@ -6,19 +6,21 @@
         <br><br>
         <i><a href="{{ url_for('login') }}">+ login page</a> <br><br></i>
         <br><br>
-        <i><a href="{{ url_for('show_nifti_image', series_instance_uid=mylist[0]) }}">+ show nifti image with papaya</a> <br><br></i>
+        <i><a href="{{ url_for('show_dicom_image', series_instance_uid='abc') }}">+ show list of dicom images (static dcm files)</a> <br><br></i>
         <br><br>
-        <i><a href="{{ url_for('show_dicom_image', series_instance_uid=mylist[1]) }}">+ show list of dicom images (from static folder)</a> <br><br></i>
+        <i><a href="{{ url_for('show_dicom_image_non_static') }}">+ show list of dicom images (dcm files storged in temp folder, simulating downloading from else where on server end)</a> <br><br></i>
         <br><br>
-        <i><a href="{{ url_for('show_dicom_image_non_static') }}">+ show list of dicom images (from temp folder, simulating downloading from else where)</a> <br><br></i>
+        <i><a href="{{ url_for('show_nifti_image', series_instance_uid='abc') }}">+ show nifti image and mask (static nii files)</a> <br><br></i>
         <br><br>
-        <i><a href="{{ url_for('show_bunny_dicom_image', series_instance_uid=mylist[1]) }}">+ show bunny dicom images with papaya</a> <br><br></i>
+        <i><a href="{{ url_for('show_bunny_dicom_image', series_instance_uid='abc') }}">+ show bunny dicom images (static dcm files, testing performance, WIP - papay is already makeing async calls, need nginx in backend to also serve request async)</a> <br><br></i>
         <br><br>
-        <i><a href="{{ url_for('show_surface') }}">+ show surface with papaya (Stanford Bunny)</a> <br><br></i>
+        <i><a href="{{ url_for('show_surface') }}">+ WIP, show surface with papaya (Stanford Bunny)</a> <br><br></i>
         <br><br>
         <i><a href="{{ url_for('long_running_task') }}">+ trigger long running task</a> <br><br></i>
         <br><br>
         <i><a href="{{ url_for('show_table', project_id="-1") }}">+ show tabular data</a> <br><br></i>
-
+        <br><br>
+        <i><a href="{{ url_for('infinite_scroll', project_id="-1") }}">+ infinite scroll</a> <br><br></i>
+        <br><br>
     </body>
 </html>

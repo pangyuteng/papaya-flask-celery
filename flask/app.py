@@ -244,6 +244,23 @@ def show_table():
         )
         # ^^^ override default kwags so DataTable css can take over look and feel.
 
+@app.route('/review_case')
+def review_case():
+    case_id = int(request.args.get('case_id'))
+    case_dict = utils.get_case_dict(case_id)
+    return render_template("review_case.html",
+        case_id=case_id,
+        case_dict=case_dict,
+    )
+
+
+@app.route('/infinite_scroll')
+def infinite_scroll():
+    project_id = int(request.args.get('project_id'))
+    return render_template("infinite_scroll.html",
+    )
+
+
 @app.route('/segment')
 def segment():
     raise NotImplementedError()

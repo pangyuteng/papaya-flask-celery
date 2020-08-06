@@ -1,0 +1,27 @@
+<div>
+    case id: {{case_id}}<br>
+    {% for k,v in case_dict.items() %}
+        <style>
+            .overlay {
+                background-image: url("{{ url_for('static', filename=v.img)}}");
+                background-repeat: no-repeat;
+                width: 128px;
+                height: 128px;
+                background-blend-mode: overlay;
+            }
+        </style>
+        <script>
+        function hover(element) {
+            element.setAttribute('src', "{{ url_for('static', filename=v.mask)}}");
+        }
+          
+        function unhover(element) {
+            element.setAttribute('src', "{{ url_for('static', filename=v.blank)}}");
+        }
+        </script>
+        <img id="my-img" class="overlay" width="128" height="128" 
+            src="{{ url_for('static', filename=v.mask)}}"
+            onmouseover="unhover(this);" 
+            onmouseout="hover(this);" />
+    {% endfor %}
+</div>
