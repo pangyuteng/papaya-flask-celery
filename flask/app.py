@@ -244,25 +244,84 @@ def show_table():
         )
         # ^^^ override default kwags so DataTable css can take over look and feel.
 
+@app.route('/ping')
+def ping():
+    return 'pong'
+
+@app.route('/review_status', methods=['GET', 'POST'])
+def review_status():
+    case_id = int(request.args.get('case_id'))
+    
+    rs = utils.ReviewStatus(case_id)
+    
+    if request.method == 'GET':
+        return jsonify(rs.get_status())
+
+    if request.method == 'POST':
+        reviewed = request.args.get('reviewed',None)
+        acceptable = request.args.get('acceptable',None)
+        prefill = request.args.get('prefill',False)
+        if prefill:
+            rs.prefill()
+        else:
+            if reviewed is not None:
+                rs.set_reviewed(reviewed,True)
+            if acceptable is not None:
+                rs.set_acceptable(acceptable,True)
+        
+        return jsonify(rs.get_status())
+
 @app.route('/review_case')
 def review_case():
     case_id = int(request.args.get('case_id'))
     only_div = True if request.args.get('only_div','true')=='true' else False
     
     case_dict = utils.get_case_dict(case_id)
-    import time
-    time.sleep(1)
+    rs = utils.ReviewStatus(case_id).get_status()
+    
     return render_template("review_case.html",
         only_div=only_div,
         case_id=case_id,
         case_dict=case_dict,
+        reviewed=rs["reviewed"],
+        acceptable=rs["acceptable"],
     )
 
+@app.route('/review_case_simple')
+def review_case_simple():
+    case_id = int(request.args.get('case_id'))
+    only_div = True if request.args.get('only_div','true')=='true' else False
+    
+    case_dict = utils.get_case_dict(case_id)
+    rs = utils.ReviewStatus(case_id).get_status()
+    
+    return render_template("review_case_simple.html",
+        only_div=only_div,
+        case_id=case_id,
+        case_dict=case_dict,
+        reviewed=rs["reviewed"],
+        acceptable=rs["acceptable"],
+    )
+
+@app.route('/infinite_scroll_simple')
+def infinite_scroll_simple():
+    project_id = int(request.args.get('project_id'))
+    case_id_list = list(range(1000))
+    
+    print(len(case_id_list),'!!!!!!!!!!!!!!!!!!!!!!!!')
+    
+    return render_template("infinite_scroll_simple.html",
+    project_id=project_id,
+    case_id_list=case_id_list,
+    )
 
 @app.route('/infinite_scroll')
 def infinite_scroll():
     project_id = int(request.args.get('project_id'))
     case_id_list = list(range(1000))
+    
+    print(len(case_id_list),'!!!!!!!!!!!!!!!!!!!!!!!!')
+    
     return render_template("infinite_scroll.html",
     project_id=project_id,
     case_id_list=case_id_list,

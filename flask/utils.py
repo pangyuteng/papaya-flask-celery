@@ -6,6 +6,7 @@ import time
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
+import yaml
 import imageio
 import pandas as pd
 import numpy as np
@@ -40,6 +41,54 @@ def get_bunny():
     ime_file = "bunny/bunny.nii.gz"
     surface_file = "bunny/bunny.vtk"
     return ime_file, surface_file
+
+
+
+class ReviewStatus():
+    def __init__(self,case_id):
+        self.case_id = case_id
+        self.yaml_path = os.path.join(THIS_DIR,"static","sample_pngs",f"{case_id}.yml")
+    def get_status(self):
+        print(self.yaml_path,'!!!!')
+        if os.path.exists(self.yaml_path):
+            with open(self.yaml_path,'r') as f:
+                return yaml.safe_load(f.read())
+        else:
+            default_dict = dict(
+                case_id=self.case_id,
+                reviewed=False,
+                acceptable=False,
+            )
+            with open(self.yaml_path,'w') as f:
+                f.write(yaml.dump(default_dict))
+            print('haha')
+            return default_dict
+
+    def prefill(self):
+        status_dict = self.get_status()
+        reviewed = status_dict['reviewed']
+        acceptable = status_dict['acceptable']
+        if reviewed is False:
+            status_dict['reviewed']=True
+            status_dict['acceptable']=True
+        with open(self.yaml_path,'w') as f:
+            f.write(yaml.dump(status_dict))
+        return status_dict
+
+    def set_reviewed(self,reviewed):
+        status_dict = self.get_status()
+        status_dict['reviewed'] = reviewed
+        with open(self.yaml_path,'w') as f:
+            f.write(yaml.dump(status_dict))
+        return status_dict
+
+    def set_acceptable(self,acceptable):
+        status_dict = self.get_status()
+        status_dict['acceptable'] = acceptable
+        status_dict['reviewed'] = True
+        with open(self.yaml_path,'w') as f:
+            f.write(yaml.dump(status_dict))
+        return status_dict
 
 def get_case_dict(case_id):
 

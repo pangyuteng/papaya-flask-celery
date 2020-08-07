@@ -55,11 +55,6 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
 <!-- JS, Popper.js, and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
@@ -68,42 +63,12 @@
 </head>
 
 <body>
-<!--<body onload="notifyWhenDone({{case_id}});">-->
 
 {% endif %}
 
-<script>
-    $("#div{{case_id}}").ready(
-    function(){
-        notifyWhenDone({{case_id}});
-        });
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    function notifyWhenDone(case_id) {
-        toastr.info('you are reviewing case_id {{case_id}}.');
-        axios.post(
-            "{{url_for('review_status',case_id=case_id,prefill=true) | safe }}"
-        ).then(function (response){
-            toastr.info(JSON.stringify(response.data));
-            console.log(JSON.stringify(response.data));
-            sleep(1000);
-            document.getElementById("reviewed{{case_id}}").innerHTML = response.data.reviewed;
-            document.getElementById("acceptable{{case_id}}").innerHTML = response.data.acceptable;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
-</script>
-
-<div class="container" id="div{{case_id}}">
+<div class="container" id="SomeDiv">
 <div class="break"></div>
-case id: {{case_id}}
-<div class="break"></div>
-reviewed: <span id="reviewed{{case_id}}">{{reviewed}}</span>
-<div class="break"></div>
-acceptable: <span id="acceptable{{case_id}}">{{acceptable}}</span>
+case id: {{case_id}} reviewed: {{reviewed}} acceptable: {{acceptable}}
 <div class="break"></div>
 {% for k,v in case_dict.items() %}
 <div class="parent">
