@@ -258,16 +258,20 @@ def review_status():
         return jsonify(rs.get_status())
 
     if request.method == 'POST':
-        reviewed = request.args.get('reviewed',None)
-        acceptable = request.args.get('acceptable',None)
-        prefill = request.args.get('prefill',False)
+        reviewed = True if request.args.get('reviewed','true') == 'true' else False
+        acceptable = True if request.args.get('acceptable','true') == 'true' else False
+        prefill = True if request.args.get('prefill','true') == 'true' else False
+
         if prefill:
             rs.prefill()
         else:
-            if reviewed is not None:
-                rs.set_reviewed(reviewed,True)
-            if acceptable is not None:
-                rs.set_acceptable(acceptable,True)
+            if reviewed:
+                rs.set_reviewed(reviewed)
+                if acceptable is not None:
+                    rs.set_acceptable(acceptable)
+            else:
+                rs.set_reviewed(reviewed)
+                rs.set_acceptable(False)
         
         return jsonify(rs.get_status())
 

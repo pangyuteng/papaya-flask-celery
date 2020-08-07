@@ -2,7 +2,8 @@
 <!--
     https://stackoverflow.com/questions/9782328/how-to-put-hover-on-img-src-tag/9782446
     https://stackoverflow.com/questions/18032220/css-change-image-src-on-imghover
-    https://proto.io/freebies/onoff/
+    https://www.bootstraptoggle.com/  
+    alternatively https://proto.io/freebies/onoff
 -->
 <html>
 <head>
@@ -50,9 +51,6 @@
     }
     </style>
 
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
 <!-- comment and you get full width, but removal causes toggle button to goto crap-->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
@@ -61,6 +59,7 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
+<!-- toggle -->
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
@@ -84,8 +83,10 @@ case id: {{case_id}} reviewed: {{reviewed}} acceptable: {{acceptable}}
 {% endfor %}
 
 <div class="break"></div>
-<input type="checkbox" checked data-toggle="toggle" data-on="Reviewed" data-off="Not Reviewed" data-onstyle="success" data-offstyle="danger">
-<input type="checkbox" checked data-toggle="toggle" data-on="Acceptable" data-off="Not Acceptable" data-onstyle="success" data-offstyle="danger">
+<div style="width:800px"></div>
+<input type="checkbox" checked data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default">
+<div style="width:10px"></div>
+<input type="checkbox" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning">
 
 <div class="break" style="border-bottom:1px solid #000;width:10px"></div>
 <div class="break"></div>
