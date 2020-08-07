@@ -1,0 +1,49 @@
+<!--
+
+https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+
+-->
+<html>
+<head>
+<script>
+let rows = [
+    ['111','aaa'],
+    ['222','bbb'],
+];
+
+function export2csv() {
+  let data = "";
+  const tableData = [];
+  for (const row of rows) {
+    const rowData = [];
+    for (const column of row) {
+      rowData.push(column);
+    }
+    tableData.push(rowData.join(","));
+  }
+  data += tableData.join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([data], { type: "text/csv" }));
+  a.setAttribute("download", "data.csv");
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+function appendRow(row) {
+    rows.append(row);
+}
+</script>
+</head>
+<body>
+
+<button onclick="export2csv()">Export array to csv file</button>
+</body>
+<div>
+    1
+    <a id='ha' class="button" href="#" onclick="rows[0][0]=this.id;"> update 1</a>
+</div>
+<div>
+    2
+</div>
+
+<html>

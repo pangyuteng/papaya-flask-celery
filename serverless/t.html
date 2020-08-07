@@ -1,8 +1,27 @@
 <!--
+
+    # image overlay, hover hide show
     https://stackoverflow.com/questions/9782328/how-to-put-hover-on-img-src-tag/9782446
     https://stackoverflow.com/questions/18032220/css-change-image-src-on-imghover
+    
+    # toggle buttons
     https://proto.io/freebies/onoff/
+    https://www.bootstraptoggle.com/
+    https://gitbrent.github.io/bootstrap4-toggle/
+
+    # onclick trigger
+    https://stackoverflow.com/questions/34721599/js-checkbox-trigger-click-onclick-doesnt-work
+    https://stackoverflow.com/questions/6358673/javascript-checkbox-onchange
+    https://stackoverflow.com/questions/7858080/how-to-use-css-button-to-post-method-in-a-form
+
+    # export
+    https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+
+    # prevent browswer reload
+    https://stackoverflow.com/questions/47306126/how-to-disable-prevent-browser-reload-icon-for-a-page-using-javascript
+
 -->
+
 <html>
 <head>
 
@@ -14,10 +33,9 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
-
 <!-- toggle -->
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
 
 
 <style>
@@ -72,6 +90,49 @@ a:hover .overlay {
     top: 0px;
 }
 </style>
+
+<script>
+  window.onbeforeunload = function() {
+          return "loosing all states";
+      }
+ $(document).on("keydown", function (e) {
+        if (e.key == "F5" || e.key == "F11" || 
+            (e.ctrlKey == true && (e.key == 'r' || e.key == 'R')) || 
+            e.keyCode == 116 || e.keyCode == 82) {
+
+                   e.preventDefault();
+        }
+    });
+
+let rows = {
+    '1': {'accepted':'true'},
+    '2': {'accepted':'true'},
+};
+function export2csv() {
+  let data = "";
+  const tableData = [];
+  for (var key in rows) {
+    const rowData = [];
+    rowData.push(key);
+    rowData.push(rows[key]['accepted']);
+    tableData.push(rowData.join(","));
+  }
+  data += tableData.join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([data], { type: "text/csv" }));
+  a.setAttribute("download", "data.csv");
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+function appendRow(row) {
+    rows.append(row);
+};
+function handleClick(row) {
+    rows[row.id]['accepted']=row.checked
+    console.log('${row.id} ${row.row.checked}');
+};
+</script>
 </head>
 <body>
 
@@ -164,12 +225,11 @@ case 1
 </a>
 </div>
 
-
 <div class="break"></div>
-<div style="width:800px"></div>
-<input type="checkbox" checked data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default">
 <div style="width:10px"></div>
-<input type="checkbox" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning">
+<input type="checkbox" disabled data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default" data-width="400" data-height="100">
+<div style="width:10px"></div>
+<input type="checkbox" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning" data-width="400" data-height="100" id='1' onchange='handleClick(this);'>
 <div class="break" style="border-bottom:1px solid #000;width:10px"></div>
 <div class="break"></div>
 
@@ -197,15 +257,17 @@ case 2
 
 
 <div class="break"></div>
-<div style="width:800px"></div>
-<input type="checkbox" unchecked data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default">
 <div style="width:10px"></div>
-<input type="checkbox" unchecked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning">
+<input type="checkbox" disabled data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default" data-width="400" data-height="100">
+<div style="width:10px"></div>
+<input type="checkbox" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning" data-width="400" data-height="100" id='2' onchange='handleClick(this);'>
 <div class="break" style="border-bottom:1px solid #000;width:10px"></div>
+<div class="break"></div>
 
 
 <!-- ##############################################################-->
 
+<button onclick="export2csv()">Export array to csv file</button>
 
 </body>
 </html>
