@@ -82,9 +82,10 @@ class ReviewStatus():
             f.write(yaml.dump(status_dict))
         return status_dict
 
-    def set_acceptable(self,acceptable):
+    def set_acceptable(self,acceptable,comment=None):
         status_dict = self.get_status()
         status_dict['acceptable'] = acceptable
+        status_dict['comment'] = comment
         status_dict['reviewed'] = True
         with open(self.yaml_path,'w') as f:
             f.write(yaml.dump(status_dict))
