@@ -1,0 +1,62 @@
+<!--
+    https://stackoverflow.com/questions/9782328/how-to-put-hover-on-img-src-tag/9782446
+    https://stackoverflow.com/questions/18032220/css-change-image-src-on-imghover
+-->
+<html>
+<head>
+<style>
+.container {
+    display: flex;
+}
+.parent {
+   position: relative;
+   width: 128px;
+   height: 128px;
+   z-index: 1;
+}
+.child {
+    display: inline-block;
+    z-index: 1;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.overlay {
+    display: inline-block;
+    opacity: .5;
+    z-index: 1;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+a:hover .overlay {
+    display: inline-block;
+    opacity: 0;
+    z-index: 1;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+<div class="parent">
+<a>
+   <img class="child" src="img_0.png" />
+   <img class="overlay" src="mask_0.png" />
+</a>
+</div>
+
+<div class="parent">
+<a>
+   <img class="child" src="img_1.png" />
+   <img class="overlay" src="mask_1.png" />
+</a>
+</div>
+
+
+</body>
+</html>
