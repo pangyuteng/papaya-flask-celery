@@ -247,8 +247,13 @@ def show_table():
 @app.route('/review_case')
 def review_case():
     case_id = int(request.args.get('case_id'))
+    only_div = True if request.args.get('only_div','true')=='true' else False
+    
     case_dict = utils.get_case_dict(case_id)
+    import time
+    time.sleep(1)
     return render_template("review_case.html",
+        only_div=only_div,
         case_id=case_id,
         case_dict=case_dict,
     )
@@ -257,7 +262,10 @@ def review_case():
 @app.route('/infinite_scroll')
 def infinite_scroll():
     project_id = int(request.args.get('project_id'))
+    case_id_list = list(range(1000))
     return render_template("infinite_scroll.html",
+    project_id=project_id,
+    case_id_list=case_id_list,
     )
 
 

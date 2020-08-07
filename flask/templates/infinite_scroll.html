@@ -1,0 +1,122 @@
+<!-- 
+    http://jquery.eisbehr.de/lazy/#examples 
+    https://stackoverflow.com/questions/21219283/jquery-lazy-load-content-in-div 
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+    div.init {
+        height: 10px;
+        display: block;
+    }
+    div.lazy {
+        display: block;
+        max-width: 100%;
+        min-height: 5px;
+    }
+    div.actual {
+        display: block;
+        max-width: 100%;
+        min-height: 1000px;
+    }
+    {# div related #}
+    body{
+        width:100%;
+        align:left;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .break {
+        flex-basis: 100%;
+        height: 10px;
+    }
+    .parent {
+        position: relative;
+        width: 260px;
+        height: 260px;
+        z-index: 1;
+    }
+    .child {
+        display: inline-block;
+        z-index: 1;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+    }
+    .overlay {
+        display: inline-block;
+        opacity: .5;
+        z-index: 1;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+    }
+    a:hover .overlay {
+        display: inline-block;
+        opacity: 0;
+        z-index: 1;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+    }
+    </style>
+    
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/jquery.lazy/1.7.1/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/jquery.lazy/1.7.1/plugins/jquery.lazy.ajax.min.js"></script>
+</head>
+<body>
+    <div class='init'> page will be loading {{ div_list | length }} cases...</div>
+    {% for case_id in case_id_list %}
+        <div class="lazy" data-loader="customLoaderName"></div>
+        <div class="lazy actual"  data-loader="ajax" data-src="{{ url_for('review_case',div_only='true',case_id=case_id) | safe }}"></div>
+        <div class="lazy" data-loader="asyncLoader"></div>
+        <div class="lazy" data-loader="errorLoader"></div>
+        <hr>
+    {% endfor %}
+    <script>
+        $(function() {
+            $('.lazy').lazy({
+                enableThrottle: true,
+                throttle: 250,
+                placeholder: 'placeholder',
+                threshold: 3000
+            });
+        });
+
+        $(function() {
+            $(".lazy").Lazy({
+                
+            // callback
+            beforeLoad: function(element) {
+                selement.html("loading initiated.");
+                console.log("start loading " + element.prop("tagName"));
+            },
+
+            // custom loaders
+            customLoaderName: function(element) {
+                element.html("element loading. please hold on to scrolling...");
+                console.log("start loading " + element.prop("tagName"));
+                element.load();
+            },
+            asyncLoader: function(element, response) {
+                setTimeout(function() {
+                    element.html("element handled by async loader");
+                    console.log("start loading " + element.prop("tagName"));
+                    response(true);
+                }, 1000);
+            }
+        });
+    });
+
+    </script>
+</body>
+</html>

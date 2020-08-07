@@ -18,9 +18,11 @@
         <br><br>
         <i><a href="{{ url_for('long_running_task') }}">+ trigger long running task</a> <br><br></i>
         <br><br>
-        <i><a href="{{ url_for('show_table', project_id="-1") }}">+ show tabular data</a> <br><br></i>
+        <i><a href="{{ url_for('show_table', project_id='-1') }}">+ show tabular data</a> <br><br></i>
         <br><br>
-        <i><a href="{{ url_for('infinite_scroll', project_id="-1") }}">+ infinite scroll</a> <br><br></i>
+        <i><a href="{{ url_for('review_case', case_id='1',only_div='false') }}">+ single case review</a> <br><br></i>
+        <br><br>
+        <i><a href="{{ url_for('infinite_scroll', project_id='1') }}">+ infinite scroll</a> <br><br></i>
         <br><br>
     </body>
 </html>

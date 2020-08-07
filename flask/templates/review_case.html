@@ -1,27 +1,83 @@
-<div>
-    case id: {{case_id}}<br>
-    {% for k,v in case_dict.items() %}
-        <style>
-            .overlay {
-                background-image: url("{{ url_for('static', filename=v.img)}}");
-                background-repeat: no-repeat;
-                width: 128px;
-                height: 128px;
-                background-blend-mode: overlay;
-            }
-        </style>
-        <script>
-        function hover(element) {
-            element.setAttribute('src', "{{ url_for('static', filename=v.mask)}}");
-        }
-          
-        function unhover(element) {
-            element.setAttribute('src', "{{ url_for('static', filename=v.blank)}}");
-        }
-        </script>
-        <img id="my-img" class="overlay" width="128" height="128" 
-            src="{{ url_for('static', filename=v.mask)}}"
-            onmouseover="unhover(this);" 
-            onmouseout="hover(this);" />
-    {% endfor %}
+{%if only_div == false %}
+<!--
+    https://stackoverflow.com/questions/9782328/how-to-put-hover-on-img-src-tag/9782446
+    https://stackoverflow.com/questions/18032220/css-change-image-src-on-imghover
+-->
+<html>
+<head>
+<!-- CSS only -->
+<!--
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+-->
+    <style>
+    body{
+        width:100%;
+        align:left;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .break {
+        flex-basis: 100%;
+        height: 10px;
+    }
+    .parent {
+        position: relative;
+        width: 260px;
+        height: 260px;
+        z-index: 1;
+    }
+    .child {
+        display: inline-block;
+        z-index: 1;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+    }
+    .overlay {
+        display: inline-block;
+        opacity: .5;
+        z-index: 1;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+    }
+    a:hover .overlay {
+        display: inline-block;
+        opacity: 0;
+        z-index: 1;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+    }
+    </style>
+
+<!-- JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+</head>
+<body>
+{% endif %}
+    
+<div class="container">
+<div class="break"></div>
+case id: {{case_id}}
+<div class="break"></div>
+{% for k,v in case_dict.items() %}
+<div class="parent">
+<a>
+   <img class="child" src="{{ url_for('static', filename=v.img)}}" width=256 />
+   <img class="overlay" src="{{ url_for('static', filename=v.mask)}}" width=256 />
+</a>
 </div>
+{% endfor %}
+<div class="break"></div>
+<div class="break" style="border-bottom:1px solid #000;width:10px"></div>
+<div class="break"></div>
+
+{%if only_div == false %}
+</body>
+</html>
+{% endif %}

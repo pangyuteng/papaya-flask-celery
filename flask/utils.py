@@ -53,22 +53,23 @@ def get_case_dict(case_id):
         mask_path = os.path.join(folder_path,f"mask_{x}.png")
         
         blank_path = os.path.join(STATIC_FOLDER,'blank.png')
-        image2d = np.zeros((512,512,4))
+        image2d = np.zeros((128,128,4))
         image2d = image2d.astype(np.uint8)
         imageio.imwrite(blank_path,image2d)
-
-        image2d = np.random.rand(32,32)*255
-        image2d = transform.resize(image2d,(512,512),0)
+        
+        np.random.seed(int(case_id)+x)
+        image2d = np.random.rand(16,16)*255
+        image2d = transform.resize(image2d,(128,128),0)
         image2d = image2d.astype(np.uint8)
         imageio.imwrite(img_path,image2d)
 
-        image2d = np.ones((512,512,4))
+        image2d = np.ones((128,128,4))
         image2d[:,:,0]=255
         image2d[:,:,1]=0
         image2d[:,:,2]=0
-        shiftx = int(np.random.rand(1)*10)
-        shifty = int(np.random.rand(1)*10)
-        image2d[100-shiftx:400+shiftx,100-shifty:400+shifty,3]=255
+        shiftx = int(np.random.rand(1)*20)
+        shifty = int(np.random.rand(1)*20)
+        image2d[30-shiftx:80+shiftx,30-shifty:80+shifty,3]=255
         image2d = image2d.astype(np.uint8)
         imageio.imwrite(mask_path,image2d)
 
@@ -80,7 +81,7 @@ def get_case_dict(case_id):
             'mask':mask_rel_path,
             'blank':blank_rel_path,
         }
-
+        print(case_dict[x])
     return case_dict
 
 def get_random_nifti_image(return_base64string=False):
