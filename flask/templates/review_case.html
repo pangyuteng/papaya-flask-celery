@@ -5,6 +5,7 @@
     https://www.bootstraptoggle.com/
     https://stackoverflow.com/questions/7354839/how-to-get-a-javascript-function-to-execute-only-once-on-dom-ready
 
+    https://stackoverflow.com/questions/32586384/bootstrap-toggle-doesnt-work-after-ajax-load/61147326#61147326
     https://stackoverflow.com/questions/426258/setting-checked-for-a-checkbox-with-jquery
     *** https://stackoverflow.com/a/52347409/868736 ***
 -->
@@ -100,10 +101,9 @@
         "Access-Control-Allow-Origin": "*",
     }
     };
-    function handleClickReview(button) {
-        console.log('review',button.id,button.checked);
-        const url = "{{url_for('review_status')}}";
-        const datastr = JSON.stringify({ case_id:"{{case_id}}", reviewed:button.checked});
+    function handleClickReview(button,case_id) {
+        const url = "/review_status";
+        const datastr = JSON.stringify({ case_id:case_id, reviewed:button.checked});
         const options = {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -112,78 +112,39 @@
         };
         axios(options).then(function (response){
             console.log(JSON.stringify(response.data));
-            document.getElementById("reviewed{{case_id}}").innerHTML = response.data.reviewed;
+            document.getElementById("reviewed"+case_id).innerHTML = response.data.reviewed;
         })
         .catch(function (error) {
             console.log(error);
         });
-        toastr.options.toastClass = 'toastr';
-        toastr.info('review ${button.id} ${button.checked}');
-    };
-    function handleClickAccept(button) {
-        console.log('acceptable',button.id,button.checked);
-        const url = "{{url_for('review_status')}}";
-        const datastr = JSON.stringify({ case_id:"{{case_id}}", acceptable:button.checked});
-        const options = {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        data: datastr,
-        url
-        };
-        axios(options).then(function (response){
-            console.log(JSON.stringify(response.data));
-            sleep(1000);
-            document.getElementById("acceptable{{case_id}}").innerHTML = response.data.acceptable;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        console.log('review ${button.id} ${button.checked}');
+        console.log('reviewed',button.id,button.checked);
 
-        $("#reviewedCB{{case_id}}").click();
-        $("#acceptableCB{{case_id}}").attr('checked',false);
+    };
+    function handleClickAccept(button,case_id) {
+
+        const url = "/review_status";
+        const datastr = JSON.stringify({ case_id:case_id, acceptable:button.checked});
+        const options = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        data: datastr,
+        url
+        };
+        axios(options).then(function (response){
+            console.log(JSON.stringify(response.data));
+            document.getElementById("acceptable"+case_id).innerHTML = response.data.acceptable;
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        console.log('acceptable',button.id,button.checked);
+
     };
 
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     
-
-    var prefilled{{case_id}} = false;
-    function notifyWhenDone(case_id) {
-        if (prefilled{{case_id}} == false){
-            toastr.options.toastClass = 'toastr';
-            //toastr.info('you are reviewing case_id {{case_id}}.');
-            const url = "{{url_for('review_status')}}";
-            const datastr = JSON.stringify({ case_id:"{{case_id}}", prefill:true});
-            const options = {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            data: datastr,
-            url
-            };
-            axios(options).then(function (response){
-                //toastr.info(JSON.stringify(response.data));
-                console.log("triggered..."+JSON.stringify(response.data));
-                document.getElementById("reviewed{{case_id}}").innerHTML = response.data.reviewed;
-                document.getElementById("acceptable{{case_id}}").innerHTML = response.data.acceptable;
-                console.log('html updated');
-                $("#reviewedCB{{case_id}}").prop('checked',response.data.reviewed).click();
-                $("#acceptableCB{{case_id}}").prop('checked',response.data.acceptable).click();
-                console.log('checkbox updated');
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-            prefilled{{case_id}} = true;
-        };
-        console.log('review ${button.id} ${button.checked}');
-    }
-    $("#div{{case_id}}").ready(function() {
-            notifyWhenDone({{case_id}});
-            $('input[type=checkbox][data-toggle^=toggle]').bootstrapToggle();
-    });
-
 </script>
 
 <div class="container" id="div{{case_id}}">
@@ -202,12 +163,49 @@ acceptable: <span id="acceptable{{case_id}}">{{acceptable}}</span>
 </a>
 </div>
 {% endfor %}
+<script>
+    var prefilled = false; //{{case_id}}
+    function notifyWhenDone(case_id) {
+        if (prefilled == false){
+            toastr.options.toastClass = 'toastr';
+            toastr.info('you are reviewing case_id',case_id);
+            const url = "{{url_for('review_status')}}";
+            const datastr = JSON.stringify({ case_id:case_id, prefill:true});
+            const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            data: datastr,
+            url
+            };
+            axios(options).then(function (response){
+                toastr.info(JSON.stringify(response.data));
+                console.log("triggered..."+JSON.stringify(response.data));
+                document.getElementById("reviewed"+case_id).innerHTML = response.data.reviewed;
+                document.getElementById("acceptable"+case_id).innerHTML = response.data.acceptable;
+                console.log('html updated');
+                $("#reviewedCB"+case_id).prop('checked',response.data.reviewed).click();
+                $("#acceptableCB"+case_id).prop('checked',response.data.acceptable).click();
+                console.log('checkbox updated');
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+            prefilled = true;
+        };
+        console.log('review ${button.id} ${button.checked}');
+    }
+    $("#div{{case_id}}").ready(function() {
+            notifyWhenDone({{case_id}});
+            $('input[type=checkbox][data-toggle^=toggle]').bootstrapToggle('destroy');
+            $('input[type=checkbox][data-toggle^=toggle]').bootstrapToggle();
+    });
 
+</script>
 <div class="break"></div>
 <div style="width:10px"></div>
-<input type="checkbox" data-width="400" data-height="100" checked data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default"  id='reviewedCB{{case_id}}' onchange='handleClickReview(this);'>
+<input type="checkbox" data-width="400" data-height="100" checked data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default"  id='reviewedCB{{case_id}}' onchange='handleClickReview(this,{{case_id}});'>
 <div style="width:10px" ></div>
-<input type="checkbox" data-width="400" data-height="100" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning"  id='acceptableCB{{case_id}}' onchange='handleClickAccept(this);'>
+<input type="checkbox" data-width="400" data-height="100" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning"  id='acceptableCB{{case_id}}' onchange='handleClickAccept(this,{{case_id}});'>
 <div class="break" style="border-bottom:1px solid #000;width:10px"></div>
 <div class="break"></div>
 
