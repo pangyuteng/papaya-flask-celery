@@ -3,6 +3,10 @@
     https://stackoverflow.com/questions/9782328/how-to-put-hover-on-img-src-tag/9782446
     https://stackoverflow.com/questions/18032220/css-change-image-src-on-imghover
     https://www.bootstraptoggle.com/
+    https://stackoverflow.com/questions/7354839/how-to-get-a-javascript-function-to-execute-only-once-on-dom-ready
+
+    https://stackoverflow.com/questions/426258/setting-checked-for-a-checkbox-with-jquery
+    *** https://stackoverflow.com/a/52347409/868736 ***
 -->
 <html>
 <head>
@@ -54,6 +58,7 @@
 <!-- Notification CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <!-- Notification -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -67,8 +72,19 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
 <!-- toggle -->
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+<script>
+    
+    //ask before reload - as action will clear temp states in page.
+    /*
+    window.onbeforeunload = function() {
+        return "are you sure?";
+    }
+    */
+
+</script>
 
 
 </head>
@@ -78,29 +94,96 @@
 {% endif %}
 
 <script>
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+    let axiosConfig = {
+    headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+        "Access-Control-Allow-Origin": "*",
     }
-    function notifyWhenDone(case_id) {
+    };
+    function handleClickReview(button) {
+        console.log('review',button.id,button.checked);
+        const url = "{{url_for('review_status')}}";
+        const datastr = JSON.stringify({ case_id:"{{case_id}}", reviewed:button.checked});
+        const options = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        data: datastr,
+        url
+        };
+        axios(options).then(function (response){
+            console.log(JSON.stringify(response.data));
+            document.getElementById("reviewed{{case_id}}").innerHTML = response.data.reviewed;
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
         toastr.options.toastClass = 'toastr';
-        toastr.info('you are reviewing case_id {{case_id}}.');
-        axios.post(
-            "{{url_for('review_status',case_id=case_id,prefill=true) | safe }}"
-        ).then(function (response){
-            toastr.info(JSON.stringify(response.data));
+        toastr.info('review ${button.id} ${button.checked}');
+    };
+    function handleClickAccept(button) {
+        console.log('acceptable',button.id,button.checked);
+        const url = "{{url_for('review_status')}}";
+        const datastr = JSON.stringify({ case_id:"{{case_id}}", acceptable:button.checked});
+        const options = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        data: datastr,
+        url
+        };
+        axios(options).then(function (response){
             console.log(JSON.stringify(response.data));
             sleep(1000);
-            document.getElementById("reviewed{{case_id}}").innerHTML = response.data.reviewed;
             document.getElementById("acceptable{{case_id}}").innerHTML = response.data.acceptable;
         })
         .catch(function (error) {
             console.log(error);
         });
+        console.log('review ${button.id} ${button.checked}');
+
+        $("#reviewedCB{{case_id}}").click();
+        $("#acceptableCB{{case_id}}").attr('checked',false);
+    };
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
-    $("#div{{case_id}}").ready(
-        function(){
+    
+
+    var prefilled{{case_id}} = false;
+    function notifyWhenDone(case_id) {
+        if (prefilled{{case_id}} == false){
+            toastr.options.toastClass = 'toastr';
+            //toastr.info('you are reviewing case_id {{case_id}}.');
+            const url = "{{url_for('review_status')}}";
+            const datastr = JSON.stringify({ case_id:"{{case_id}}", prefill:true});
+            const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            data: datastr,
+            url
+            };
+            axios(options).then(function (response){
+                //toastr.info(JSON.stringify(response.data));
+                console.log("triggered..."+JSON.stringify(response.data));
+                document.getElementById("reviewed{{case_id}}").innerHTML = response.data.reviewed;
+                document.getElementById("acceptable{{case_id}}").innerHTML = response.data.acceptable;
+                console.log('html updated');
+                $("#reviewedCB{{case_id}}").prop('checked',response.data.reviewed).click();
+                $("#acceptableCB{{case_id}}").prop('checked',response.data.acceptable).click();
+                console.log('checkbox updated');
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+            prefilled{{case_id}} = true;
+        };
+        console.log('review ${button.id} ${button.checked}');
+    }
+    $("#div{{case_id}}").ready(function() {
             notifyWhenDone({{case_id}});
+            $('input[type=checkbox][data-toggle^=toggle]').bootstrapToggle();
     });
+
 </script>
 
 <div class="container" id="div{{case_id}}">
@@ -121,10 +204,10 @@ acceptable: <span id="acceptable{{case_id}}">{{acceptable}}</span>
 {% endfor %}
 
 <div class="break"></div>
-<div style="width:800px"></div>
-<input type="checkbox" checked data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default">
 <div style="width:10px"></div>
-<input type="checkbox" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning">
+<input type="checkbox" data-width="400" data-height="100" checked data-toggle="toggle" data-on="reviewed" data-off="pending" data-onstyle="info" data-offstyle="default"  id='reviewedCB{{case_id}}' onchange='handleClickReview(this);'>
+<div style="width:10px" ></div>
+<input type="checkbox" data-width="400" data-height="100" checked data-toggle="toggle" data-on="accept" data-off="reject" data-onstyle="success" data-offstyle="warning"  id='acceptableCB{{case_id}}' onchange='handleClickAccept(this);'>
 <div class="break" style="border-bottom:1px solid #000;width:10px"></div>
 <div class="break"></div>
 

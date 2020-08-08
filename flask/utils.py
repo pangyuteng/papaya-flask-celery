@@ -97,7 +97,7 @@ def get_case_dict(case_id):
     folder_path = os.path.join(THIS_DIR,"static","sample_pngs",f"{case_id}")
     os.makedirs(folder_path,exist_ok=True)
     case_dict = {}
-    for x in range(10):
+    for x in range(1):
 
         img_path = os.path.join(folder_path,f"img_{x}.png")
         mask_path = os.path.join(folder_path,f"mask_{x}.png")

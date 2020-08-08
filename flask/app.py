@@ -250,29 +250,32 @@ def ping():
 
 @app.route('/review_status', methods=['GET', 'POST'])
 def review_status():
-    case_id = int(request.args.get('case_id'))
-    
-    rs = utils.ReviewStatus(case_id)
     
     if request.method == 'GET':
+        case_id = int(request.args.get('case_id'))
+        rs = utils.ReviewStatus(case_id)
         return jsonify(rs.get_status())
 
     if request.method == 'POST':
-        reviewed = True if request.args.get('reviewed','true') == 'true' else False
-        acceptable = True if request.args.get('acceptable','true') == 'true' else False
-        prefill = True if request.args.get('prefill','true') == 'true' else False
+        print(request.json)
+        case_id = int(request.json.get('case_id'))
+        prefill = request.json.get('prefill',False)
+
+        rs = utils.ReviewStatus(case_id)
 
         if prefill:
-            rs.prefill()
+            print(rs.get_status(),'###################')
+            if rs.get_status()['reviewed'] is False:
+                rs.prefill()
         else:
-            if reviewed:
+            reviewed = request.json.get('reviewed',None)
+            if reviewed is not None:
                 rs.set_reviewed(reviewed)
-                if acceptable is not None:
-                    rs.set_acceptable(acceptable)
-            else:
-                rs.set_reviewed(reviewed)
-                rs.set_acceptable(False)
-        
+
+            acceptable = request.json.get('acceptable',None)
+            if acceptable is not None:
+                rs.set_acceptable(acceptable)
+
         return jsonify(rs.get_status())
 
 @app.route('/review_case')
