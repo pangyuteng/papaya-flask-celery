@@ -92,60 +92,60 @@
 
 <body>
 
-{% endif %}
-
-<script>
-    let axiosConfig = {
-    headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        "Access-Control-Allow-Origin": "*",
-    }
-    };
-    function handleClickReview(button,case_id) {
-        const url = "/review_status";
-        const datastr = JSON.stringify({ case_id:case_id, reviewed:button.checked});
-        const options = {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        data: datastr,
-        url
+    <script>
+        let axiosConfig = {
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            "Access-Control-Allow-Origin": "*",
+        }
         };
-        axios(options).then(function (response){
-            console.log(JSON.stringify(response.data));
-            document.getElementById("reviewed"+case_id).innerHTML = response.data.reviewed;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        console.log('reviewed',button.id,button.checked);
-
-    };
-    function handleClickAccept(button,case_id) {
-
-        const url = "/review_status";
-        const datastr = JSON.stringify({ case_id:case_id, acceptable:button.checked});
-        const options = {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        data: datastr,
-        url
-        };
-        axios(options).then(function (response){
-            console.log(JSON.stringify(response.data));
-            document.getElementById("acceptable"+case_id).innerHTML = response.data.acceptable;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        console.log('acceptable',button.id,button.checked);
-
-    };
-
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+        function handleClickReview(button,case_id) {
+            const url = "/review_status";
+            const datastr = JSON.stringify({ case_id:case_id, reviewed:button.checked});
+            const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            data: datastr,
+            url
+            };
+            axios(options).then(function (response){
+                console.log(JSON.stringify(response.data));
+                document.getElementById("reviewed"+case_id).innerHTML = response.data.reviewed;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+            console.log('reviewed',button.id,button.checked);
     
-</script>
+        };
+        function handleClickAccept(button,case_id) {
+    
+            const url = "/review_status";
+            const datastr = JSON.stringify({ case_id:case_id, acceptable:button.checked});
+            const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            data: datastr,
+            url
+            };
+            axios(options).then(function (response){
+                console.log(JSON.stringify(response.data));
+                document.getElementById("acceptable"+case_id).innerHTML = response.data.acceptable;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+            console.log('acceptable',button.id,button.checked);
+    
+        };
+    
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+    </script>
+    
+{% endif %}
 
 <div class="container" id="div{{case_id}}">
 <div class="break"></div>
