@@ -24,7 +24,7 @@
     div.actual {
         display: block;
         max-width: 100%;
-        min-height: 100px;
+        min-height: 500px;
     }
     {# div related #}
     body{
@@ -158,7 +158,7 @@
     <div class='init'> page will be loading {{ case_id_list | length }} cases...</div>
     {% for case_id in case_id_list %}
         <div class="lazy" data-loader="customLoaderName"></div>
-        <div class="lazy actual"  data-loader="ajax" data-src="{{ url_for('review_case',div_only='true',case_id=case_id) | safe }}"></div>
+        <div class="lazy actual" data-loader="ajax" data-src="{{ url_for('review_case',div_only='true',case_id=case_id) | safe }}"></div>
         <div class="lazy" data-loader="asyncLoader"></div>
         <div class="lazy" data-loader="errorLoader"></div>
         <hr>
