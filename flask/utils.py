@@ -37,8 +37,12 @@ def get_state(project_id):
     summary_dict, state_df = get_state_summary(project_id)
     return summary_dict, state_df
 
+# def get_bunny():
+#     ime_file = "bunny/bunny.nii.gz"
+#     surface_file = "bunny/bunny.vtk"
+#     return ime_file, surface_file
 def get_bunny():
-    ime_file = "bunny/bunny.nii.gz"
+    ime_file = "bunny/rbunny.nii.gz"
     surface_file = "bunny/bunny.vtk"
     return ime_file, surface_file
 
@@ -381,10 +385,11 @@ def render_bunny_isosurface():
     tempdir = os.path.join(THIS_DIR,'static','bunny')
     os.makedirs(tempdir,exist_ok=True)
     with cd(tempdir):
-
+        import vtk
+        
         # downn sample !!!
         if not os.path.exists('bunny.vtk'):
-            import vtk
+            
 
             reader = vtk.vtkNIFTIImageReader()
             reader.SetFileName('bunny.nii.gz')
