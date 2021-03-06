@@ -7,6 +7,8 @@ mystart---myfind---mymove---|
         |-myfind---mymove --|
                  |-mymove --|
 
+               merge output of my find, then move to mymove
+
 mystart (reads csv and sends message to queue - `initiate`)
 myfind (runs `findscu` connects to hospital pacs and download multiple query dcm files)
 mymove (takes in single query dcm file and runs `movescu` to fetch dcm to Orthanc, 
@@ -54,7 +56,7 @@ app.conf.task_routes = {
 
 #@app.task(bind=True)
 #def mystart(self,fetch_list):
-mynum = 0
+mynum = 1
 
 @app.task
 def noop(*args, **kwargs):

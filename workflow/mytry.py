@@ -15,13 +15,17 @@ def main():
     print('am here')
     mylist = [1,2,3]
     print('ok')
+
     workflow = chain(
-        group(myfind.map(mystart(mylist))),
+        group(myfind.map(mystart.s())),
         myunwrap.s(noop.s()),
         group(mymove.map(noop.s())),
-        mydone.s()
+        mydone.s(noop.s())
     )
-    ~ workflow
+    workflow.delay((mylist,))
+
     print('done')
+
 if __name__ == '__main__':
-    main()
+    for x in range(100):
+        main()
