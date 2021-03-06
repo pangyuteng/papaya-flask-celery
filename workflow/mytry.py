@@ -1,6 +1,6 @@
 # https://www.ovh.com/blog/doing-big-automation-with-celery/
 
-from myapp import (
+from app import (
     chain, group, chord,
     mystart, mydone,
     myfind, myunwrap, mymove, 
