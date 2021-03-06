@@ -54,39 +54,55 @@ app.conf.task_routes = {
 
 #@app.task(bind=True)
 #def mystart(self,fetch_list):
+mynum = 0
+
+@app.task
+def noop(*args, **kwargs):
+    # Task accepts any arguments and does nothing
+    print(args, kwargs)
+    return True
 
 @app.task()
 def mystart(fetch_list):
     print('mystart',fetch_list)
-    time.sleep(5)
+    time.sleep(mynum)
     return fetch_list
 
 @app.task()
-def myfind(myfind_param):
+def myfind(*args, **kwargs):
+    print(args)
+    myfind_param = args[0]
     print('myfind_param',myfind_param)
-    time.sleep(1)
+    time.sleep(mynum)
     if myfind_param == 1:
-        return [1,2,3]
+        v = 1
     elif myfind_param == 2:
-        return [4,5,6]
+        v = 5
     else:
-        return [6,8,9]
+        v = 10
+    return list(range(v))
 
 @app.task()
-def myunwrap(listoflist):
+def myunwrap(*args, **kwargs):
+    print(args)
+    listoflist = args[0]
     print('myunwrap',listoflist)
     # flatten items from output list of all myfinds
     flat_list = [item for sublist in listoflist for item in sublist]
     return flat_list
 
 @app.task()
-def mymove(mymove_param):
+def mymove(*args, **kwargs):
+    print(args)
+    mymove_param = args[0]
     print('mymove',mymove_param)
-    time.sleep(1)
+    time.sleep(mynum)
     return mymove_param*2
 
 @app.task()
-def mydone(param_list):
-    print('mydone',param_list)
-    time.sleep(1)
-    return param_list
+def mydone(*args, **kwargs):
+    print(args)
+    mydone_param = args[0]
+    print('mydone',mydone_param)
+    time.sleep(mynum)
+    return len(mydone_param)
