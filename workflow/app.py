@@ -34,6 +34,7 @@ TODO: misc
 '''
 import os
 import time
+from copy import deepcopy
 from celery import Celery, group, subtask, chain, chord, uuid
 from celery.result import AsyncResult
 
@@ -54,15 +55,27 @@ app.conf.task_routes = {
     'mydone': {'queue': 'receiver'},
 }
 
+
+"""
+Takes an iterator of argument tuples and queues them up for celery to run with the function.
+https://stackoverflow.com/a/13569873/868736
+https://stackoverflow.com/questions/13271056/how-to-chain-a-celery-task-that-returns-a-list-into-a-group
+https://stackoverflow.com/questions/59013002/how-to-recursively-chain-a-celery-task-that-returns-a-list-into-a-group
+"""
+@app.task
+def dmap(it, callback):
+    # Map a callback over an iterator and return as a group
+    callback = subtask(callback)
+    return group(callback.clone((arg,)) for arg in it)()
+
 #@app.task(bind=True)
 #def mystart(self,fetch_list):
 mynum = 1
 
 @app.task
-def noop(*args, **kwargs):
-    # Task accepts any arguments and does nothing
-    print(args, kwargs)
-    return True
+def noop(ignored):
+    print('noop',ignored)
+    return ignored
 
 @app.task()
 def mystart(fetch_list):
@@ -71,9 +84,11 @@ def mystart(fetch_list):
     return fetch_list
 
 @app.task()
-def myfind(*args, **kwargs):
-    print(args)
-    myfind_param = args[0]
+def myfindmap(items):
+    return myfind.map(items)
+
+@app.task()
+def myfind(myfind_param):
     print('myfind_param',myfind_param)
     time.sleep(mynum)
     if myfind_param == 1:
@@ -82,29 +97,29 @@ def myfind(*args, **kwargs):
         v = 5
     else:
         v = 10
-    return list(range(v))
+    mylist = list(range(v))
+    return mymove.map(mylist)()
 
 @app.task()
-def myunwrap(*args, **kwargs):
-    print(args)
-    listoflist = args[0]
-    print('myunwrap',listoflist)
-    # flatten items from output list of all myfinds
-    flat_list = [item for sublist in listoflist for item in sublist]
-    return flat_list
+def mymovemap(items):
+    return mymove.map(items)
 
 @app.task()
-def mymove(*args, **kwargs):
-    print(args)
-    mymove_param = args[0]
+def mymove(mymove_param):
     print('mymove',mymove_param)
     time.sleep(mynum)
     return mymove_param*2
 
+
 @app.task()
-def mydone(*args, **kwargs):
-    print(args)
-    mydone_param = args[0]
+def myunwrap(listoflist):
+    print('myunwrap',listoflist)
+    # flatten items from output list of all myfinds
+    #flat_list = [item for _,sublist in listoflist.collect() for item in sublist]
+    return (mymove.map(x) for x in listoflist)
+
+@app.task()
+def mydone(mydone_param):
     print('mydone',mydone_param)
     time.sleep(mynum)
     return len(mydone_param)
