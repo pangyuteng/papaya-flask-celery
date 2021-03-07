@@ -70,7 +70,7 @@ def dmap(it, callback):
 
 #@app.task(bind=True)
 #def mystart(self,fetch_list):
-mynum = 1
+mynum = 60
 
 @app.task
 def noop(ignored):
@@ -92,11 +92,11 @@ def myfind(myfind_param):
     print('myfind_param',myfind_param)
     time.sleep(mynum)
     if myfind_param == 1:
-        v = 1
-    elif myfind_param == 2:
         v = 5
+    elif myfind_param == 2:
+        v = 50
     else:
-        v = 10
+        v = 100
     mylist = list(range(v))
     return mymove.map(mylist)()
 

@@ -22,7 +22,7 @@ from app import (
 
 def main():
     print('am here')
-    mylist = (1,2,3,4)*10
+    mylist = range(1000)
     print('ok')
 
     workflow = chain(
