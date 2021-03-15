@@ -1,4 +1,4 @@
-## drag and drop with javascript and python flask
+## drag and drop with Dropzone (javascript) and Flask (python)
 
 ### demo
 
@@ -15,9 +15,17 @@ docker-compose up
 ```
 docker-compose build
 docker run -it -p 5000:5000 -v $PWD:/opt/code dragndrop_dropzone bash
-python app
+python app.py
 ```
+
++ move new css and js files to `static` folder.
+```
+https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
+https://github.com/dropzone/dropzone/releases/download/v5.8.1/dist.zip
+```
+
+
 ### ref
-+ https://github.com/dropzone/dropzone/releases/download/v5.8.1/dist.zip
++ https://www.dropzonejs.com/
 + https://stackoverflow.com/a/42264730/868736
 + https://github.com/greyli/flask-dropzone/blob/master/examples/complete-redirect/app.py

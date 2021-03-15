@@ -7,5 +7,3 @@ RUN pip install -r /opt/code/requirements.txt
 
 COPY . /opt/code
 
-RUN pip install -r /opt/code/requirements.txt
-
