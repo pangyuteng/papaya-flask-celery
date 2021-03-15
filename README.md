@@ -71,7 +71,7 @@ end of rant.
     + [ ] data access abtraction
     + [ ] mongodb
     + [ ] file storage
-    + [ ] enable drag and drop import & store & retrive data
+    + [x] enable drag and drop import & store & retrive data
     + [ ] batch data import export capability? via celery.
     + [ ] batch export of quantified data.
     + [ ] case report generation
