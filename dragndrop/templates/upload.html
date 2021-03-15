@@ -10,21 +10,21 @@
 </head>
 
 <body>
+uid: {{uid}}
+<form action="{{ url_for('upload',uid=uid) }}" class="dropzone" id="my-dropzone" method="POST" enctype="multipart/form-data">
+</form>
 
-  <form action="{{ url_for('upload',uid=uid) }}" class="dropzone" id="my-dropzone" method="POST" enctype="multipart/form-data">
-  </form>
+<script>
+  Dropzone.autoDiscover = false;
   
-  <script>
-    Dropzone.autoDiscover = false;
-    
-    $(function() {
-      var myDropzone = new Dropzone("#my-dropzone");
-      myDropzone.on("queuecomplete", function(file) {
-        // Called when all files in the queue finish uploading.
-        window.location = "{{ url_for('upload',uid=uid) }}";
-      });
-    })
-    </script>
+  $(function() {
+    var myDropzone = new Dropzone("#my-dropzone");
+    myDropzone.on("queuecomplete", function(file) {
+      // Called when all files in the queue finish uploading.
+      window.location = "{{ url_for('completed',uid=uid) }}";
+    });
+  })
+</script>
 </body>
 
 </html>

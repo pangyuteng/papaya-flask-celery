@@ -7,14 +7,16 @@
 </head>
 
 <body>
-{{uid}}
+uid: {{uid}}
 <hr>
 {% for df in df_list %}
 {% for n,row in df.iterrows() %}
-{{row}}
+{{row}}<br>
 {% endfor %}
 <hr>
 {% endfor %}
+<br>
+delete_success: {{delete_success}}
 </body>
 
 </html>
