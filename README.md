@@ -67,15 +67,18 @@ end of rant.
     + [x] rest api front - flask
     + [x] async trigger long running task - celery/rabbitmq/redis
     + [x] 2d, 3d visualization - Papaya
-    + [ ] authenticaion
-    + [ ] data access abtraction
+    + [x] authenticaion (see ./itsdangerous)
+    + [x] enable drag and drop import & store & retrive data (see ./dragndrop)
+    + [x] email. https://gist.github.com/pangyuteng/b1e5cd003bd2310cbf335791e9d08d1d
+    + [x] scaling/async with nginx. (see ./nginx and 8398773c00204c041dec9dad837aebf4)
+    + [o] celery task chaining (see ./workflow)
+    + [ ] data access abtraction (see a808eb0c026474d999110039c9b03ae1)
     + [ ] mongodb
     + [ ] file storage
-    + [x] enable drag and drop import & store & retrive data
-    + [ ] batch data import export capability? via celery.
-    + [ ] batch export of quantified data.
-    + [ ] case report generation
-    + [ ] scaling with wsgi for http and nginx for static files.
+    + [o] batch data import export capability? via celery. (see ./dragndrop)
+    + [ ] airflow for long running tasks vs celery?
+    + [ ] batch export of quantified data. (see ./dragndrop and ./workflow and cffda14bba8b1a0526ec6992118b9fa4)
+    + [o] case report generation (see 2af5d4ee692f05fab20e72630260e2be and https://stackoverflow.com/a/37807113/868736)
     + [ ] create aws friendly docker-compose file to claim project is "in the cloud".
 
 + client side async - get a list of dicom files quickly and render in papaya.
