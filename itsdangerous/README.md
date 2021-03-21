@@ -7,21 +7,24 @@
 bash up.sh
 ```
 
-+ head to `localhost:5000`
-
-+ login with time-sensitive token.
++ request time-sensitive token.
 ```
 curl -k -X POST -F 'email=asdf@ok.com' https://localhost:5000/login
 ```
 
-+ authenticae with token as a user
++ authenticate with token as a user.
 ```
 curl -k https://localhost:5000/authenticate?token=asdf%40ok.com.YFebvQ.VZXx-lr5rZeAq0AAdhPD5vfD-9w
 ```
 
-+ use `itsarobot` token as authentication
++ using basicauth with `itsarobot`'s token created during start of `app.py` from printout.
 ```
 curl -k -u itsarobot.YFehGA.ZqwLF5sTpN6pupficH_W0nA8GGU:dummy https://localhost:5000/api/resource
+```
+
++ gui
+```
+https://gtx.local:5000/login
 ```
 
 ### dev

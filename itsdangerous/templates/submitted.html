@@ -5,10 +5,17 @@
 </head>
 
 <body>
-  status {{status}} <br><br>
-  token: {{token}} <br><br>
+  status: {{status}} <br><br>
+
+  login url has been sent to your email! <br><br>
+
+  --<br><br>
+  since this is just a demo, below is the login url (token expires in {{expiration_sec}} seconds):<br><br>
+  
   login url:<br>
   <a href="{{url_for('authenticate',token=token)}}">authenticate</a><br>
+
+  token: {{token}} <br><br>
 </body>
 
 </html>

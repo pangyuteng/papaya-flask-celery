@@ -120,7 +120,7 @@ def login():
         return jsonify({"error":"invalid email."})
 
     token = User(user_id).generate_auth_token()
-    return render_template('submitted.html',status='token generated!',token=token)
+    return render_template('submitted.html',status='token generated!',token=token,expiration_sec=EXPIRATION_SECONDS)
 
 @app.route('/home')
 @login_required
