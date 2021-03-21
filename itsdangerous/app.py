@@ -133,5 +133,5 @@ if __name__ == '__main__':
     for key in ssl_context:
         if not os.path.exists(key):
             raise ValueError('pem file not found')
-    get_auth_token('itsarobot')
+    print(get_auth_token('itsarobot'))
     app.run(host="0.0.0.0",port=5000, debug=True,ssl_context=ssl_context)
