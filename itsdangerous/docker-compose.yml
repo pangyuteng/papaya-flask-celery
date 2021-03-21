@@ -1,10 +1,15 @@
-version: "3.9"
+version: "3"
 services:
   itsdangerous:
     image: itsdangerous
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - $PWD/keystore:/keystore
+      - $PWD:/opt/code
     ports:
       - "5000:5000"
     command: "python /opt/code/app.py"

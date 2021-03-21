@@ -5,9 +5,10 @@
 </head>
 
 <body>
-  status {{status}} <br>
+  status {{status}} <br><br>
+  token: {{token}} <br><br>
   login url:<br>
-  <a href="{{url_for('authenticate',token=token)}}">link</a><br>
+  <a href="{{url_for('authenticate',token=token)}}">authenticate</a><br>
 </body>
 
 </html>

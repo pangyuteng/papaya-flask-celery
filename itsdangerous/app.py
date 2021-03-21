@@ -1,43 +1,63 @@
-import datetime
 import os
+import sys
 import traceback
-import flask
-from flask import Flask, render_template, request, redirect, url_for
+import datetime
+
+from flask import (
+    Flask, render_template, request, redirect, url_for,
+    jsonify, 
+)
 from flask_login import (
     login_user, current_user, UserMixin, LoginManager, 
-    login_required, logout_user
+    login_required, logout_user,
 )
-from itsdangerous import (TimedJSONWebSignatureSerializer
-                          as Serializer, BadSignature, SignatureExpired)
-from itsdangerous.url_safe import URLSafeSerializer
+from itsdangerous import (
+    TimedJSONWebSignatureSerializer as Serializer, 
+    BadSignature, SignatureExpired,
+)
+
+from itsdangerous.url_safe import (
+    URLSafeSerializer, URLSafeTimedSerializer,
+)
+from flask_httpauth import HTTPBasicAuth
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY']='12345'
+app.config['SECRET_KEY']=os.environ['SECRET_KEY']
+SK = app.config['SECRET_KEY']
+EXPIRATION_SECONDS = 10
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+auth = HTTPBasicAuth() # for rest api
 
 class User(UserMixin):
     def __init__(self,user_id):
         self.id = user_id
-    def generate_auth_token(self, expiration = 600):
-        s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
-        return s.dumps({ 'id': self.id }).decode('ascii')
+
+    def generate_auth_token(self):
+        s = URLSafeTimedSerializer(SK).signer(SK)
+        token = s.sign(self.id)
+        token = token.decode('utf-8')
+        return token
+
     @staticmethod
-    def verify_auth_token(token):
-        s = Serializer(app.config['SECRET_KEY'])
+    def verify_auth_token(token,max_age=EXPIRATION_SECONDS):
+        s = URLSafeTimedSerializer(SK).signer(SK)
         try:
-            data = s.loads(token)
+            token = token.encode('utf-8')
+            user_id = s.unsign(token,max_age=max_age)
+            user_id = user_id.decode('utf-8')
         except SignatureExpired:
             return None # valid token, but expired
         except BadSignature:
             return None # invalid token
-        return User(data['id'])
-
-login_manager = LoginManager()
-login_manager.init_app(app)
+        return User(user_id)
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    return redirect(url_for('login'))
+    response = jsonify({"error":"unauthorized request."})
+    return response, 401
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -53,28 +73,35 @@ def logout():
 def index():
     return redirect(url_for('home'))
 
+@app.route('/ping')
+def ping():
+    return jsonify({"status":"pong"})
+
 @app.route('/authenticate')
 def authenticate():
-    token_dump = request.args.get('token')
-    user = User.verify_auth_token(token_dump)
+    token = request.args.get('token')
+    user = User.verify_auth_token(token)
     if user is not None:
         login_user(user)
         return redirect(url_for('home'))
     return unauthorized()
 
-#from flask_httpauth import HTTPBasicAuth
-#auth = HTTPBasicAuth()
-#@auth.login_required
-@app.route('/api/settings')
-def settings():
-    return "ok"
+@auth.verify_password
+def verify_password(username_or_token, password):
+    user = User.verify_auth_token(username_or_token,max_age=None)
+    if not user:
+        return False
+    return True
 
-@app.route('/api/token')
-def get_auth_token():
-    # TODO: for service accounts, increase expiration.
-    user_id = request.args.get('user_id')
-    token = User(user_id).generate_auth_token(expiration=600)
-    return jsonify({'token': token.decode('ascii')})
+@app.route('/api/resource')
+@auth.login_required
+def settings():
+    return jsonify({'data':'blah'})
+
+# not a rest call! for dev to pass to devs.
+def get_auth_token(user_id):
+    token = User(user_id).generate_auth_token()
+    return { 'token': token }
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -89,10 +116,10 @@ def login():
 
     user_id = request.form['email']
 
-    if "@ok.com" not in user_id:
-        return "ERROR"
+    if "@" not in user_id:
+        return jsonify({"error":"invalid email."})
 
-    token = User(user_id).generate_auth_token(expiration=600)
+    token = User(user_id).generate_auth_token()
     return render_template('submitted.html',status='token generated!',token=token)
 
 @app.route('/home')
@@ -103,4 +130,8 @@ def home():
 
 if __name__ == '__main__':
     ssl_context=('/keystore/cert.pem', '/keystore/key.pem')
+    for key in ssl_context:
+        if not os.path.exists(key):
+            raise ValueError('pem file not found')
+    get_auth_token('itsarobot')
     app.run(host="0.0.0.0",port=5000, debug=True,ssl_context=ssl_context)
