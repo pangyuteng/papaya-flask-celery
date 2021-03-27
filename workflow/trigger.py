@@ -20,7 +20,7 @@ from app import (
     myfindmap, mymovemap,
 )
 
-def main():
+def mytrigger():
     print('am here')
     mylist = range(10)
     print('ok')
@@ -40,4 +40,4 @@ def main():
     print('done')
 
 if __name__ == '__main__':
-    main()
+    mytrigger()
