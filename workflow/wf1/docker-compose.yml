@@ -1,0 +1,54 @@
+version: '3'
+services:
+    redis:
+        image: redis:latest
+        hostname: redis
+        ports:
+            - 6379:6379
+        restart: always
+    rabbitmq:
+        image: rabbitmq:management
+        hostname: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+        restart: always
+    # flower:
+    #     image: myimage
+    #     ports:
+    #         - 5555:5555
+    #     links:
+    #         - rabbitmq
+    #         - worker
+    #     restart: always
+    #     command: flower --address=* --port=5555 --broker=amqp://rabbitmq:5672
+    receiver:
+        environment:
+            AMQP_URI: amqp://rabbitmq:5672
+            REDIS_URI: redis://redis:6379/1
+            C_FORCE_ROOT: "true"
+        image: myimage
+        links:
+            - worker
+            - rabbitmq
+            - redis
+        restart: always
+        command: bash receiver.sh
+        volumes:
+            - $PWD:/opt
+    worker:
+        environment:
+            AMQP_URI: amqp://rabbitmq:5672
+            REDIS_URI: redis://redis:6379/1
+            C_FORCE_ROOT: "true"
+        image: myimage
+        build:
+            context: .
+            dockerfile: Dockerfile
+        links:
+            - rabbitmq
+            - redis
+        restart: always
+        command: bash worker.sh
+        volumes:
+            - $PWD:/opt
