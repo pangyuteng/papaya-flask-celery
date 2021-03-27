@@ -1,5 +1,5 @@
 '''
-proposed workflow.
+workflow 1.
 
 mystart---myfind---mymove---|
         |        |-mymove --|
@@ -7,37 +7,20 @@ mystart---myfind---mymove---|
         |-myfind---mymove --|
                  |-mymove --|
 
-               merge output of my find, then move to mymove
-
-mystart (reads csv and sends message to queue - `initiate`)
-myfind (runs `findscu` connects to hospital pacs and download multiple query dcm files)
-mymove (takes in single query dcm file and runs `movescu` to fetch dcm to Orthanc, 
-         downloads and process zip from localhost Orthanc and delete from Orthanc)
-mydone (email, and cleanup if necessary)
+    merge output of my find, then move to mymove
 
 user executes `bin/fetch.py` which triggers `mystart`
 worker `receiver.sh` consumes `mystart`, `mydone`
 worker `worker.sh` consumes `myfind` and `mymove`
 
-TODO: rate limit / throttling to maintain availability
-assuming 2 receivers and 10 workers
-each recevier shall only occupy 5 workers, to maintain availability
-if receiver is increased, dynically reduce worker to maintain availability until utilizing 1 worker.
 '''
 
-'''
-TODO: misc
-#task = celery.AsyncResult(task_id)
-#response = {'ready': task.ready(),'task_id':task_id}
-
-
-'''
 import os
 import time
+import random
 from copy import deepcopy
 from celery import Celery, group, subtask, chain, chord, uuid
 from celery.result import AsyncResult
-
 
 celery_config = {
     "broker_url": os.environ["AMQP_URI"],
@@ -45,6 +28,7 @@ celery_config = {
     "task_serializer": "pickle", # for passing binary objects
     "result_serializer": "pickle",
     "accept_content": ["pickle"],
+    "worker_prefetch_multiplier": 1,
 }
 
 app = Celery(broker=celery_config["broker_url"])
@@ -68,47 +52,44 @@ def dmap(it, callback):
     callback = subtask(callback)
     return group(callback.clone((arg,)) for arg in it)()
 
-#@app.task(bind=True)
-#def mystart(self,fetch_list):
-mynum = 60
-
-@app.task
-def noop(ignored):
-    print('noop',ignored)
-    return ignored
+mysleep = 0
 
 @app.task()
-def mystart(fetch_list):
-    print('mystart',fetch_list)
-    time.sleep(mynum)
-    return fetch_list
+def mystart():
+    time.sleep(mysleep)
+    random_list = random.sample(range(10, 30), 3)
+    print('mystart',random_list)
+    return random_list
+
+@app.task()
+def myfind(myinput):
+    print('myfind',myinput)
+    time.sleep(mysleep)
+    mylist = random.sample(range(1, 100), myinput)
+    return mymove.map(mylist)()
+
+@app.task()
+def mymove(myinput):
+    print('mymove',myinput)
+    time.sleep(mysleep)
+    return myinput*2
+
+@app.task()
+def mydone(myinput):
+    print('mydone',myinput)
+    time.sleep(mysleep)
+    return len(myinput)
+
+############### misc junk
 
 @app.task()
 def myfindmap(items):
     return myfind.map(items)
 
-@app.task()
-def myfind(myfind_param):
-    print('myfind_param',myfind_param)
-    time.sleep(mynum)
-    if myfind_param == 1:
-        v = 5
-    elif myfind_param == 2:
-        v = 50
-    else:
-        v = 100
-    mylist = list(range(v))
-    return mymove.map(mylist)()
 
 @app.task()
 def mymovemap(items):
     return mymove.map(items)
-
-@app.task()
-def mymove(mymove_param):
-    print('mymove',mymove_param)
-    time.sleep(mynum)
-    return mymove_param*2
 
 
 @app.task()
@@ -118,8 +99,8 @@ def myunwrap(listoflist):
     #flat_list = [item for _,sublist in listoflist.collect() for item in sublist]
     return (mymove.map(x) for x in listoflist)
 
-@app.task()
-def mydone(mydone_param):
-    print('mydone',mydone_param)
-    time.sleep(mynum)
-    return len(mydone_param)
+
+@app.task
+def noop(ignored):
+    print('noop',ignored)
+    return ignored

@@ -22,7 +22,7 @@ from app import (
 
 def main():
     print('am here')
-    mylist = range(1000)
+    mylist = range(10)
     print('ok')
 
     workflow = chain(
@@ -30,7 +30,8 @@ def main():
         dmap.s(myfind.s()),
         mydone.s(),
     )
-    result = workflow.apply_async(args=(mylist,))
+    #result = workflow.apply_async(args=(mylist,))
+    result = workflow.apply_async()
     while not result.ready():
         print(result.ready())
         time.sleep(1)
