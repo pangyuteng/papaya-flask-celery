@@ -1,20 +1,3 @@
-'''
-workflow 1.
-
-mystart---myfind---mymove---|
-        |        |-mymove --|
-        |                   |- mydone  
-        |-myfind---mymove --|
-                 |-mymove --|
-
-    merge output of my find, then move to mymove
-
-user executes `bin/fetch.py` which triggers `mystart`
-worker `receiver.sh` consumes `mystart`, `mydone`
-worker `worker.sh` consumes `myfind` and `mymove`
-
-'''
-
 import os
 import time
 import random
@@ -54,20 +37,31 @@ def dmap(it, callback):
 
 mysleep = 0
 
+# generate a list
 @app.task()
 def mystart():
     time.sleep(mysleep)
-    random_list = random.sample(range(10, 30), 3)
+    random_list = [1,2,3]
     print('mystart',random_list)
     return random_list
 
+# generate more lists based on input
 @app.task()
 def myfind(myinput):
     print('myfind',myinput)
     time.sleep(mysleep)
     mylist = random.sample(range(1, 100), myinput)
-    return mymove.map(mylist)()
+    return mylist
 
+@app.task()
+def mycollect(myinput):
+    mylist = []
+    for x in myinput:
+        mylist.extend(x)
+    time.sleep(mysleep)
+    return mylist
+
+# manipulate with input and return output
 @app.task()
 def mymove(myinput):
     print('mymove',myinput)

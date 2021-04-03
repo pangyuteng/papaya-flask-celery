@@ -1,6 +1,25 @@
 
 ##### celery workflow demo
 
-+ would recommend only for simple 1 or 2 layer workflows.
+```
+workflow 1.
 
-+ maybe use celery inconjunction with asyncio
+mystart---myfind---mymove---|
+        |        |-mymove --|
+        |                   |----- mydone  
+        |-myfind---mymove --|
+            |    |-mymove --|
+            |----------------
+    merge output of my find, then move to mymove
+
+user executes `bin/fetch.py` which triggers `mystart`
+worker `receiver.sh` consumes `mystart`, `mydone`
+worker `worker.sh` consumes `myfind` and `mymove`
+
+```
+
+```
+tmux new
+docker-compose up
+tmux new
+docker exec -it wf1_receiver_1 bash

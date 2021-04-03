@@ -16,8 +16,7 @@ import time
 from app import (
     chain, group, chord, dmap,
     mystart, mydone, noop,
-    myfind, myunwrap, mymove, 
-    myfindmap, mymovemap,
+    myfind, mycollect, mymove, 
 )
 
 def mytrigger():
@@ -28,6 +27,8 @@ def mytrigger():
     workflow = chain(
         mystart.s(), 
         dmap.s(myfind.s()),
+        mycollect.s(),
+        dmap.s(mymove.s()),
         mydone.s(),
     )
     #result = workflow.apply_async(args=(mylist,))
