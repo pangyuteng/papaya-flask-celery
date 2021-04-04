@@ -56,12 +56,6 @@ def myworkflow0():
 @app.task()
 def myworkflow():
     
-    #random_list = [1,2,3]
-    #mylist = [myfind.s(x) for x in random_list] # distribue to workers
-    #reduced_results = chord(mylist)(mycollect.s()) # reduce to flat lit
-    #mymove_results = mymove.map(reduced_results.get()) # execute func per item
-    #mydone_results = chain(mymove_results,mydone.s()) # aggregate
-
     mylist = myfind.map(mystart.delay().get())
     
     reduced_results = mycollect.s(~mylist) # reduce to flat lit
