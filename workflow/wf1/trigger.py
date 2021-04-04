@@ -1,52 +1,22 @@
-
-#
-# madeup complex workflow
-# https://www.ovh.com/blog/doing-big-automation-with-celery/
-# https://stackoverflow.com/a/29689441/868736
-#
-# real world complex workflow!
-# https://www.azavea.com/blog/2016/10/20/how-to-build-asynchronous-workflows-geospatial-application/
-#
-# "Celery does not natively support conditional or dynamic task chains. "
-# "We got around this by creating a list of tasks depending on input, and "
-# "converting it to a Celery chain at the very end."
-#
-
 import time
 from app import (
-    chain, group, chord, dmap,
-    mystart, mydone, noop,
-    myfind, mycollect, mymove, 
+    chain, group, chord,
     mymapper, mymain
 )
 
-def mytrigger():
-    print('am here')
-    mylist = range(10)
-    print('ok')
+def mytrigger0():
 
     # works
-    #result = mymapper.apply_async()
+    result = mymapper.apply_async()
+    while not result.ready():
+        print(result.ready())
+        time.sleep(1)
+    
+def mytrigger():
 
+    # works
     result = mymain.apply_async()
     
-    #workflow = chain(
-    #    mystart.s(),
-        #dmap.s(myfind.s()),
-        #mycollect.s(), # merge to list
-        #group()(), # wait 
-        #mycollect.s(), # merge to list
-        #mymove.map(), # execute item per list 
-    #)
-    # workflow = chain(
-    #     mystart.s(), 
-    #     dmap.s(myfind.s()),
-    #     mycollect.s(),
-    #     dmap.s(mymove.s()),
-    #     mydone.s(),
-    # )
-    #result = workflow.apply_async(args=(mylist,))
-    #result = workflow.apply_async()
     while not result.ready():
         print(result.ready())
         time.sleep(1)

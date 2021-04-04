@@ -45,13 +45,19 @@ def myreduce(results):
 
 @app.task()
 def mymain():
-    
     random_list = [1,2,3]
-    mylist = [myfind.s(x) for x in random_list]
-    reduced_results = chord(mylist)(mycollect.s())
-    more_results = mymove.map(reduced_results.get())
-    mydone_results = chord(more_results)(mydone.s())
-    return mydone_results
+    
+    mylist = [myfind.s(x) for x in random_list] # distribue to workers
+    
+    reduced_results = chord(mylist)(mycollect.s()) # reduce to flat lit
+    
+    mymove_results = mymove.map(reduced_results.get()) # execute func per item
+    
+    mydone_results = chain(mymove_results,mydone.s()) # aggregate
+    
+    mydone_results.delay().get()
+
+    return results
 
 # generate more lists based on input
 @app.task()
@@ -61,19 +67,6 @@ def myfind(myinput):
 
     mylist = random.sample(range(1, 100), myinput)
     return mylist
-
-
-"""
-Takes an iterator of argument tuples and queues them up for celery to run with the function.
-https://stackoverflow.com/a/13569873/868736
-https://stackoverflow.com/questions/13271056/how-to-chain-a-celery-task-that-returns-a-list-into-a-group
-https://stackoverflow.com/questions/59013002/how-to-recursively-chain-a-celery-task-that-returns-a-list-into-a-group
-"""
-@app.task()
-def dmap(it, callback):
-    # Map a callback over an iterator and return as a group
-    callback = subtask(callback)
-    return group(callback.clone((arg,)) for arg in it)()
 
 mysleep = 0
 
@@ -115,27 +108,3 @@ def mydone(myinput):
     time.sleep(mysleep)
     return len(myinput)
 
-############### misc junk
-
-@app.task()
-def myfindmap(items):
-    return myfind.map(items)
-
-
-@app.task()
-def mymovemap(items):
-    return mymove.map(items)
-
-
-@app.task()
-def myunwrap(listoflist):
-    print('myunwrap',listoflist)
-    # flatten items from output list of all myfinds
-    #flat_list = [item for _,sublist in listoflist.collect() for item in sublist]
-    return (mymove.map(x) for x in listoflist)
-
-
-@app.task
-def noop(ignored):
-    print('noop',ignored)
-    return ignored
