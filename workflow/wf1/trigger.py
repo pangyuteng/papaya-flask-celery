@@ -1,7 +1,10 @@
 import time
 from app import (
     chain, group, chord,
-    mymapper, myworkflow, myworkflow0
+    mymapper, #works
+    myworkflow0, #works
+    myworkflow1, #works
+    myworkflow, #works
 )
 
 def mytrigger0():

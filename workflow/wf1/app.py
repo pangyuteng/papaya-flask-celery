@@ -54,7 +54,7 @@ def myworkflow0():
     return ~mydone_results
 
 @app.task()
-def myworkflow():
+def myworkflow1():
     
     mylist = myfind.map(mystart.delay().get())
     
@@ -67,6 +67,27 @@ def myworkflow():
     results = mydone_results.delay().get()
 
     return results
+
+@app.task
+def dmap(it, callback):
+    # Map a callback over an iterator and return as a group
+    callback = subtask(callback)
+    return group(callback.clone((arg,)) for arg in it)()
+
+@app.task()
+def myworkflow():
+    
+    wf = chain(
+        mystart.s(),
+        dmap.s(myfind.s()),
+        _mycollect.s(),
+        dmap.s(mymove.s()),
+        mydone.s()
+    )    
+
+    return wf.delay().get()
+
+
 
 # generate more lists based on input
 @app.task()
@@ -103,6 +124,15 @@ def mycollect(myinput):
         mylist.extend(x)
     time.sleep(mysleep)
     return mylist
+
+@app.task()
+def _mycollect(myinput):
+    mylist = []
+    for x in myinput:
+        mylist.extend(x.get())
+    time.sleep(mysleep)
+    return mylist
+
 
 # manipulate with input and return output
 @app.task()
