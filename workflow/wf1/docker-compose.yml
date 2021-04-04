@@ -19,19 +19,6 @@ services:
     #         - rabbitmq
     #         - worker
     #     command: flower --address=* --port=5555 --broker=amqp://rabbitmq:5672
-    receiver:
-        environment:
-            AMQP_URI: amqp://rabbitmq:5672
-            REDIS_URI: redis://redis:6379/1
-            C_FORCE_ROOT: "true"
-        image: myimage
-        links:
-            - worker
-            - rabbitmq
-            - redis
-        command: bash receiver.sh
-        volumes:
-            - $PWD:/opt
     worker:
         environment:
             AMQP_URI: amqp://rabbitmq:5672

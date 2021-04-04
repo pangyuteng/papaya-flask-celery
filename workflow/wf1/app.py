@@ -4,6 +4,7 @@ import random
 from copy import deepcopy
 from celery import Celery, group, subtask, chain, chord, uuid
 from celery.result import AsyncResult
+import celery
 
 celery_config = {
     "broker_url": os.environ["AMQP_URI"],
@@ -17,10 +18,49 @@ celery_config = {
 app = Celery(broker=celery_config["broker_url"])
 app.conf.update(celery_config)
 app.conf.task_default_queue = 'default'
-app.conf.task_routes = {
-    'mystart': {'queue': 'receiver'},
-    'mydone': {'queue': 'receiver'},
-}
+
+
+#https://stackoverflow.com/questions/12822005/celery-group-task-for-use-in-a-map-reduce-workflow/12897526
+
+@app.task()
+def mymapper():
+    #split your problem in embarrassingly parallel maps 
+    maps = [mymap.s(), mymap.s(), mymap.s(), mymap.s(), mymap.s(), mymap.s(), mymap.s(), mymap.s()]
+    #and put them in a chord that executes them in parallel and after they finish calls 'reduce'
+    mapreduce = chord(maps)(myreduce.s())
+    return "{0} mapper ran on {1}".format(celery.current_task.request.id, celery.current_task.request.hostname)
+
+@app.task()
+def mymap():
+    #do something useful here
+    import time
+    time.sleep(10.0)
+    return "{0} map ran on {1}".format(celery.current_task.request.id, celery.current_task.request.hostname)
+
+@app.task()
+def myreduce(results):
+    #put the maps together and do something with the results
+    return "{0} reduce ran on {1}".format(celery.current_task.request.id, celery.current_task.request.hostname)
+
+
+@app.task()
+def mymain():
+    
+    random_list = [1,2,3]
+    mylist = [myfind.s(x) for x in random_list]
+    reduced_results = chord(mylist)(mycollect.s())
+    more_results = [mymove.s(x) for x in reduced_results]
+    mydone_results = chord(more_results)(mydone.s())
+    return mydone_results
+
+# generate more lists based on input
+@app.task()
+def myfind(myinput):
+    print('myfind',myinput)
+    time.sleep(mysleep)
+
+    mylist = random.sample(range(1, 100), myinput)
+    return mylist
 
 
 """
@@ -29,7 +69,7 @@ https://stackoverflow.com/a/13569873/868736
 https://stackoverflow.com/questions/13271056/how-to-chain-a-celery-task-that-returns-a-list-into-a-group
 https://stackoverflow.com/questions/59013002/how-to-recursively-chain-a-celery-task-that-returns-a-list-into-a-group
 """
-@app.task
+@app.task()
 def dmap(it, callback):
     # Map a callback over an iterator and return as a group
     callback = subtask(callback)
@@ -50,6 +90,7 @@ def mystart():
 def myfind(myinput):
     print('myfind',myinput)
     time.sleep(mysleep)
+
     mylist = random.sample(range(1, 100), myinput)
     return mylist
 

@@ -17,6 +17,7 @@ from app import (
     chain, group, chord, dmap,
     mystart, mydone, noop,
     myfind, mycollect, mymove, 
+    mymapper, mymain
 )
 
 def mytrigger():
@@ -24,15 +25,28 @@ def mytrigger():
     mylist = range(10)
     print('ok')
 
-    workflow = chain(
-        mystart.s(), 
-        dmap.s(myfind.s()),
-        mycollect.s(),
-        dmap.s(mymove.s()),
-        mydone.s(),
-    )
+    # works
+    #result = mymapper.apply_async()
+
+    result = mymain.apply_async()
+    
+    #workflow = chain(
+    #    mystart.s(),
+        #dmap.s(myfind.s()),
+        #mycollect.s(), # merge to list
+        #group()(), # wait 
+        #mycollect.s(), # merge to list
+        #mymove.map(), # execute item per list 
+    #)
+    # workflow = chain(
+    #     mystart.s(), 
+    #     dmap.s(myfind.s()),
+    #     mycollect.s(),
+    #     dmap.s(mymove.s()),
+    #     mydone.s(),
+    # )
     #result = workflow.apply_async(args=(mylist,))
-    result = workflow.apply_async()
+    #result = workflow.apply_async()
     while not result.ready():
         print(result.ready())
         time.sleep(1)
