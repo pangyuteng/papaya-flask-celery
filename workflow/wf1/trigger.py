@@ -1,7 +1,7 @@
 import time
 from app import (
     chain, group, chord,
-    mymapper, mymain
+    mymapper, myworkflow, myworkflow0
 )
 
 def mytrigger0():
@@ -15,7 +15,7 @@ def mytrigger0():
 def mytrigger():
 
     # works
-    result = mymain.apply_async()
+    result = myworkflow.apply_async()
     
     while not result.ready():
         print(result.ready())

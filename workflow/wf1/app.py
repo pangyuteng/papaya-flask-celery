@@ -42,16 +42,31 @@ def myreduce(results):
     #put the maps together and do something with the results
     return "{0} reduce ran on {1}".format(celery.current_task.request.id, celery.current_task.request.hostname)
 
+@app.task()
+def myworkflow0():
+    
+    random_list = [1,2,3]
+    mylist = [myfind.s(x) for x in random_list] # distribue to workers
+    reduced_results = chord(mylist)(mycollect.s()) # reduce to flat lit
+    mymove_results = mymove.map(reduced_results.get()) # execute func per item
+    mydone_results = chain(mymove_results,mydone.s()) # aggregate
+
+    return ~mydone_results
 
 @app.task()
-def mymain():
-    random_list = [1,2,3]
+def myworkflow():
     
-    mylist = [myfind.s(x) for x in random_list] # distribue to workers
+    #random_list = [1,2,3]
+    #mylist = [myfind.s(x) for x in random_list] # distribue to workers
+    #reduced_results = chord(mylist)(mycollect.s()) # reduce to flat lit
+    #mymove_results = mymove.map(reduced_results.get()) # execute func per item
+    #mydone_results = chain(mymove_results,mydone.s()) # aggregate
+
+    mylist = myfind.map(mystart.delay().get())
     
-    reduced_results = chord(mylist)(mycollect.s()) # reduce to flat lit
+    reduced_results = mycollect.s(~mylist) # reduce to flat lit
     
-    mymove_results = mymove.map(reduced_results.get()) # execute func per item
+    mymove_results = mymove.map(~reduced_results) # execute func per item
     
     mydone_results = chain(mymove_results,mydone.s()) # aggregate
     
@@ -74,9 +89,9 @@ mysleep = 0
 @app.task()
 def mystart():
     time.sleep(mysleep)
-    random_list = [1,2,3]
-    print('mystart',random_list)
-    return random_list
+    mylist = mylist = random.sample(range(1, 10), 3)
+    print('mystart',mylist)
+    return mylist
 
 # generate more lists based on input
 @app.task()
