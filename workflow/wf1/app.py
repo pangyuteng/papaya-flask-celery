@@ -55,7 +55,7 @@ def mymain():
     
     mydone_results = chain(mymove_results,mydone.s()) # aggregate
     
-    mydone_results.delay().get()
+    results = mydone_results.delay().get()
 
     return results
 
