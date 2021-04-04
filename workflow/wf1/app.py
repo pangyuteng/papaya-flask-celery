@@ -49,7 +49,7 @@ def mymain():
     random_list = [1,2,3]
     mylist = [myfind.s(x) for x in random_list]
     reduced_results = chord(mylist)(mycollect.s())
-    more_results = [mymove.s(x) for x in reduced_results]
+    more_results = mymove.map(reduced_results.get())
     mydone_results = chord(more_results)(mydone.s())
     return mydone_results
 
