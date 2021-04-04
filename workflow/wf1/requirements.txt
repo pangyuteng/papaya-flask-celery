@@ -2,7 +2,7 @@ flask
 flask-restplus
 flask-login
 gunicorn
-celery
+celery==5.0.5
 flower
 redis
 gevent
