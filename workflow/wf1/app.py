@@ -6,18 +6,9 @@ from celery import Celery, group, subtask, chain, chord, uuid
 from celery.result import AsyncResult
 import celery
 
-celery_config = {
-    "broker_url": os.environ["AMQP_URI"],
-    "result_backend": os.environ["REDIS_URI"],
-    "task_serializer": "pickle", # for passing binary objects
-    "result_serializer": "pickle",
-    "accept_content": ["pickle"],
-    "worker_prefetch_multiplier": 1,
-}
-
-app = Celery(broker=celery_config["broker_url"])
-app.conf.update(celery_config)
-app.conf.task_default_queue = 'default'
+import celeryconfig
+app = Celery()
+app.config_from_object(celeryconfig)
 
 
 #https://stackoverflow.com/questions/12822005/celery-group-task-for-use-in-a-map-reduce-workflow/12897526

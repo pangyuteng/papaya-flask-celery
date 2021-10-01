@@ -22,11 +22,12 @@ worker `worker.sh` consumes `myfind` and `mymove`
 tmux new
 docker-compose up
 
-tmux new
-docker exec -it wf1_worker_1 bash
-celery -A app worker -Q default --loglevel=INFO --pool=gevent --concurrency=10 --hostname=%h
+# dev 
+#tmux new
+#docker exec -it wf1_worker_1 bash
+#celery -A app worker -Q default --loglevel=INFO --pool=gevent --concurrency=10 --hostname=%h
 
 tmux new
 docker exec -it wf1_worker_1 bash
-python triggger
+python triggger.py
 ```
