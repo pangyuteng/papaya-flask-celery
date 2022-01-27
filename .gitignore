@@ -1,4 +1,5 @@
 **/__pycache__/**
 flask/static/sample_dicom/*.dcm
 flask/static/sample_dicom/*.nii
+flask/static/sample_pngs/*
 flask/static/bunny/*

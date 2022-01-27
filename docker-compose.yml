@@ -1,15 +1,15 @@
 version: '3'
 services:
-    nginx:
-        build:
-            context: ./nginx
-            dockerfile: Dockerfile
-        volumes:
-           - www-data:/var/www-data
-        ports:
-            - 80:80
-        depends_on:
-           - flask
+    # nginx:
+    #     build:
+    #         context: ./nginx
+    #         dockerfile: Dockerfile
+    #     volumes:
+    #        - www-data:/var/www-data
+    #     ports:
+    #         - 80:80
+    #     depends_on:
+    #        - flask
     redis:
         image: redis:latest
         hostname: redis
@@ -23,14 +23,14 @@ services:
             - 5672:5672
             - 15672:15672
         restart: always
-    flower:
-        image: myimage
-        ports:
-            - 5555:5555
-        links:
-            - rabbitmq
-        command: flower --address=* --port=5555 --broker=amqp://rabbitmq:5672
-        restart: always
+    # flower:
+    #     image: myimage
+    #     ports:
+    #         - 5555:5555
+    #     links:
+    #         - rabbitmq
+    #     command: flower --address=* --port=5555 --broker=amqp://rabbitmq:5672
+    #     restart: always
     flask:
         environment:
             AMQP_URI: amqp://rabbitmq:5672
@@ -55,9 +55,9 @@ services:
             interval: 30s
             timeout: 10s
             retries: 3
-        deploy:
-            mode: replicated
-            replicas: 2
+        # deploy:
+        #     mode: replicated
+        #     replicas: 2
     worker:
         environment:
             AMQP_URI: amqp://rabbitmq:5672
