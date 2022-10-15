@@ -1,0 +1,27 @@
+version: '3.6'
+services:
+    nginx:
+        image: mynginx
+        ports:
+            - "80:80"
+            - "443:443"
+        build:
+            context: .
+            dockerfile: Dockerfile.nginx
+        volumes:
+            - ${PWD}/keystore:/keystore
+        depends_on:
+            - flask
+    flask:
+        privileged: true
+        environment:
+            PORT: 5555
+        build:
+            context: .
+            dockerfile: Dockerfile.flask
+        image: hola
+        volumes:
+            - ${PWD}:/workdir
+        expose:
+          - "5555"
+        command: python app.py -port 5555 --debug

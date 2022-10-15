@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<script>
+
+function ping_get() {
+    const url = "https://192.168.68.138/ping";
+    const payload = {};
+    const options = {
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+        data: payload,
+        url
+    };
+    axios(options).then(function (response){
+        console.log(JSON.stringify(response.data));
+        console.log('ping done.');
+    })
+    .catch(function (error) {
+        console.log('ping error');
+        console.log(error);
+    });    
+
+};
+
+function myfunc_post_notworking() {
+    const url = "https://192.168.68.138/myfunc";
+    let payload = JSON.stringify({
+        uid: 105456830, 
+        accepted: true
+    });
+    const options = {
+        method: 'post',
+        headers: {
+            'content-type': 'application/json',
+        },
+        data: payload,
+        url
+    };
+    axios(options).then(function (response){
+        console.log(JSON.stringify(response.data));
+        console.log('post done');
+    })
+    .catch(function (error) {
+        console.log('post error');
+        console.log(error);
+    });    
+};
+
+
+function myfunc_post() {
+    const url = "https://192.168.68.138/myfunc";
+    let payload = JSON.stringify({
+        uid: 105456830, 
+        accepted: true
+    });
+    const options = {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: payload,
+        url
+    };
+    axios(options).then(function (response){
+        console.log(JSON.stringify(response.data));
+        console.log('post done');
+    })
+    .catch(function (error) {
+        console.log('post error');
+        console.log(error);
+    });    
+};
+
+
+function myfunc_get_notworking() {
+    const url = "https://192.168.68.138/myfunc";
+    const payload = JSON.stringify({
+        uid: 105456830, 
+        accepted: true
+    });
+    const options = {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: payload,
+        url
+    };
+    axios(options).then(function (response){
+        console.log(JSON.stringify(response.data));
+        console.log('get done');
+    })
+    .catch(function (error) {
+        console.log('get error');
+        console.log(error);
+    });      
+};
+
+
+</script>
+</head>
+<body>
+    press F12...
+    <script>
+    ping_get();    
+    myfunc_post();
+    //myfunc_post_notworking();
+    myfunc_get_notworking();
+    </script>
+</script>
+</body>
+</html>

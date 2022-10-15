@@ -1,0 +1,5 @@
+FROM tensorflow/tensorflow:2.9.1-gpu-jupyter
+
+WORKDIR /workdir
+COPY requirements.txt .
+RUN pip install -r requirements.txt
