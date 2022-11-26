@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>upload and then redirect</title>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+
+    <form id="myForm" action="{{url_for('upload')}}" method="POST" enctype = "multipart/form-data">
+        <input type="file" name="file" accept=".nii.gz" /> <br>
+        <input type="submit" name="submit" value="Upload" id="myButton" />
+    </form>
+    <script type="text/javascript">
+
+    var form = document.getElementById('myForm');
+
+    form.onsubmit = async (e) => {
+
+        e.preventDefault();
+        const form = e.currentTarget;
+        const url = form.action;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+
+            console.log(response);
+            console.log(response.status);
+            window.location.href = "https://www.stackoverflow.com";
+            console.log("wwwwwwwwww");
+        } catch (error) {
+            console.error(error);
+        }
+
+    }
+    
+    </script>
+      
+</body>
+</html>
