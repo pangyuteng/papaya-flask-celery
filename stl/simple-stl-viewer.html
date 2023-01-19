@@ -6,7 +6,11 @@
 <script src="./lib/STLLoader.js"></script>
 <script src="./lib/OrbitControls.js"></script>
 
-<div id="model" style="width: 500px; height: 500px"> </div>
+<div id="model0" style="width: 512px; height: 512px"> </div>
+<!--
+<div id="model1" style="width: 512px; height: 512px"> </div>
+<div id="model2" style="width: 512px; height: 512px"> </div>
+-->
 <script>
 function STLViewer(model, elementID) {
 
@@ -31,7 +35,7 @@ function STLViewer(model, elementID) {
     controls.dampingFactor = 0.1;
     controls.enableZoom = true;
     controls.autoRotate = true;
-    controls.autoRotateSpeed = .75;
+    controls.autoRotateSpeed = 5;//.75;
 
 
     var scene = new THREE.Scene();
@@ -43,18 +47,18 @@ function STLViewer(model, elementID) {
             specular: 100, 
             shininess: 100 });
         var mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
+        scene.add(mesh);
 
         var middle = new THREE.Vector3();
         geometry.computeBoundingBox();
         geometry.boundingBox.getCenter(middle);
         mesh.geometry.applyMatrix(new THREE.Matrix4().makeTranslation( 
             -middle.x, -middle.y, -middle.z ) );
-
+        mesh.rotation.x = Math.PI / 2;
         var largestDimension = Math.max(geometry.boundingBox.max.x,
             geometry.boundingBox.max.y, 
             geometry.boundingBox.max.z)
-        camera.position.z = largestDimension * 1.5;
+        camera.position.z = largestDimension * 3;
 
         var animate = function () {
             requestAnimationFrame(animate);
@@ -70,8 +74,16 @@ function STLViewer(model, elementID) {
 <body>
 <script type="text/javascript">
     window.onload = function() {
-        STLViewer("./keystone.stl", "model")
+        STLViewer("./lung_vessels.stl", "model0")
     }
+    /*
+    window.onload = function() {
+        STLViewer("./lung_vessels.stl", "model1")
+    }
+    window.onload = function() {
+        STLViewer("./lung_vessels.stl", "model2")
+    }
+    */
 </script>
 </body>
 </html>
