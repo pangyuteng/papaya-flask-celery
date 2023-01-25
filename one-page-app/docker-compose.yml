@@ -1,0 +1,106 @@
+version: '3'
+services:
+    redis:
+        image: redis:latest
+        hostname: redis
+        ports:
+            - 6379:6379
+        restart: always
+        healthcheck:
+            test: redis-cli ping
+            interval: 60s
+            timeout: 10s
+            retries: 5
+            start_period: 40s
+    rabbitmq:
+        image: rabbitmq:management
+        hostname: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+        restart: always
+        healthcheck:
+            test: rabbitmqctl status
+            interval: 60s
+            timeout: 10s
+            retries: 5
+            start_period: 40s
+    beat:
+        environment:
+            - ENVIRONMENT=${ENVIRONMENT}
+            - C_FORCE_ROOT=TRUE
+            - AMQP_URI=amqp://rabbitmq:5672
+            - REDIS_URI=redis://redis:6379/1
+        image: myflask
+        build:
+            context: ./flask
+            dockerfile: Dockerfile
+        volumes:
+            - ${PWD}/flask:/opt/app
+            - ${PWD}/tmp:/shared
+        links:
+            - redis
+            - rabbitmq
+        command: bash beat.sh
+        healthcheck:
+            test: kill -0 $$(cat /opt/celeryworker.pid)
+            interval: 30s
+            timeout: 10s
+            retries: 3
+    flask:
+        environment:
+            - ENVIRONMENT=${ENVIRONMENT}
+            - C_FORCE_ROOT=TRUE
+            - AMQP_URI=amqp://rabbitmq:5672
+            - REDIS_URI=redis://redis:6379/1
+            - CACHE_URI=redis://redis:6379/2
+        image: myflask
+        build:
+            context: ./flask
+            dockerfile: Dockerfile
+        volumes:
+            - ${PWD}/flask:/opt/app
+            - ${PWD}/tmp:/shared
+        links:
+            - redis
+            - rabbitmq
+        restart: always
+        command: bash flask.sh
+        ports:
+            - 5000:5000
+        healthcheck:
+            test: curl -f http://localhost:5000/ping || exit 1
+            interval: 30s
+            timeout: 10s
+            retries: 3
+    worker:
+        environment:
+            - ENVIRONMENT=${ENVIRONMENT}
+            - C_FORCE_ROOT=TRUE
+            - AMQP_URI=amqp://rabbitmq:5672
+            - REDIS_URI=redis://redis:6379/1
+            - CACHE_URI=redis://redis:6379/2
+        image: myflask
+        build:
+            context: ./flask
+            dockerfile: Dockerfile
+        volumes:
+            - ${PWD}/flask:/opt/app
+            - ${PWD}/tmp:/shared
+        links:
+            - redis
+            - rabbitmq
+        restart: always
+        command: bash worker.sh
+        healthcheck:
+            test: kill -0 $$(cat /opt/celeryworker.pid)
+            interval: 30s
+            timeout: 10s
+            retries: 0
+# volumes:
+#     myshare:
+#         driver: local
+#         driver_opts:
+#             o: bind
+#             type: none
+#             device: ${PWD}/tmp

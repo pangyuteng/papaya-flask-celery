@@ -1,0 +1,55 @@
+<html>
+<head>
+</head>
+<body>
+<form action="{{ url_for('submit') }}" id="myForm" method="POST">
+    <input type="hidden" name="task_id" id="myForm.task_id" value="123" readonly />
+    <label for="full_name">full name</label>
+    <input type="text" name="full_name" id="myForm.full_name"/>
+    <label for="extra_sauce">extra sauce</label>
+    <select name="extra_sauce" id="myForm.extra_sauce">
+    <option value="YES">YES</option>
+    <option value="NO">NO</option>
+    </select>
+    <button id="myButton" type="button">submit</button>
+</form>
+{{ queue_status }}
+<br>
+{% for item in job_status %}
+{{ item }}<br>
+{% endfor %}
+<br>
+<script type="text/javascript">
+    var form = document.getElementById('myForm');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const url = form.action;
+        fetch(url, {  
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                task_id: document.getElementById("myForm.task_id").value,
+                full_name: document.getElementById("myForm.full_name").value,
+                extra_sauce: document.getElementById("myForm.extra_sauce").value,
+            })
+        })
+        .then(function (response) {  
+            console.log('Request success: ', response);
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            window.location.href = "{{ url_for('home') }}";
+        })
+        .catch(function (error) {  
+            console.log('Request failure: ', error);  
+        });
+
+    }
+    document.getElementById("myButton").onclick = form.onsubmit;
+</script>
+</body>
+</html>
