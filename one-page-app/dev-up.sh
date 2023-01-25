@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker compose --env-file .env.dev up
+docker compose -f docker-compose.yml -f dev.yml up
