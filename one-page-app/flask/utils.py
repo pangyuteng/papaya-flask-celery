@@ -31,7 +31,6 @@ celery = Celery()
 celery.config_from_object(celeryconfig)
 
 AMQP_URI = os.environ["AMQP_URI"]
-print(AMQP_URI)
 kombu_inst = kombu.Connection(AMQP_URI)
 kombu_inst.connect()
 
@@ -112,6 +111,7 @@ def email(from_email,to_email,title,message):
 
 
 def get_job_status():
+    mymonitor()
     mylist = []
     for task_id in os.listdir("/shared"):
 
@@ -147,7 +147,6 @@ def get_job_status():
             workdir=workdir,
         )
         mylist.append(myitem)
-
     return mylist
 
 @celery.task()
@@ -183,3 +182,5 @@ def mymonitor():
             email(from_email,to_email,title,message)
             pathlib.Path(error_emailed_file).touch()
             os.remove(error_file)
+
+    os.remove(lock_file)
