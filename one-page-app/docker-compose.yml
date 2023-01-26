@@ -30,9 +30,6 @@ services:
         build:
             context: ./flask
             dockerfile: Dockerfile
-        volumes:
-            - ${PWD}/flask:/opt/app
-            - ${PWD}/tmp:/shared
         depends_on:
             - worker
         command: bash beat.sh
@@ -46,9 +43,6 @@ services:
         build:
             context: ./flask
             dockerfile: Dockerfile
-        volumes:
-            - ${PWD}/flask:/opt/app
-            - ${PWD}/tmp:/shared
         depends_on:
             - redis
             - rabbitmq
@@ -66,9 +60,6 @@ services:
         build:
             context: ./flask
             dockerfile: Dockerfile
-        volumes:
-            - ${PWD}/flask:/opt/app
-            - ${PWD}/tmp:/shared
         depends_on:
             - redis
             - rabbitmq
@@ -79,10 +70,3 @@ services:
             interval: 30s
             timeout: 10s
             retries: 0
-# volumes:
-#     myshare:
-#         driver: local
-#         driver_opts:
-#             o: bind
-#             type: none
-#             device: ${PWD}/tmp

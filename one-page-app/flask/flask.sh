@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd /opt/app
+
 # or you can scale via nginx,docker...
 if [ ${ENVIRONMENT} == "production" ]; then
     gunicorn -k eventlet --workers 2 --timeout 120 --bind 0.0.0.0:5000 wsgi:app

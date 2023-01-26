@@ -1,1 +1,2 @@
-tmp
+__pycache__
+celerybeat-schedule

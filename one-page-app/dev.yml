@@ -7,7 +7,12 @@ services:
             - AMQP_URI=amqp://rabbitmq:5672
             - REDIS_URI=redis://redis:6379/1
             - CACHE_URI=redis://redis:6379/2
+        volumes: &vol
+            - ${PWD}/flask:/opt/app
+            - ${PWD}/tmp:/shared
     flask:
         environment: *env
+        volumes: *vol
     worker:
         environment: *env
+        volumes: *vol
