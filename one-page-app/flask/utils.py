@@ -89,9 +89,9 @@ def myjob(self,mydict):
         sh_file = os.path.join(workdir,'run.sh')
         with open(sh_file,'w') as f:
             f.write(content)
-        actual_cmd_list = ['cd','workdir','&&','bash','run.sh']
+        cmd_str = f"cd {workdir} && /bin/bash run.sh"
         with open(stdout_file,"wb") as out, open(stderr_file,"wb") as err:
-            ret_code = subprocess.call(actual_cmd_list,stdout=out,stderr=err,shell=True)
+            ret_code = subprocess.call(cmd_str,stdout=out,stderr=err,shell=True)
         if ret_code != 0:
             raise ValueError("job failed.")
 
