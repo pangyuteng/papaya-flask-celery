@@ -33,9 +33,8 @@ services:
         volumes:
             - ${PWD}/flask:/opt/app
             - ${PWD}/tmp:/shared
-        links:
-            - redis
-            - rabbitmq
+        depends_on:
+            - worker
         command: bash beat.sh
         healthcheck:
             test: kill -0 $$(cat /opt/celeryworker.pid)
@@ -50,7 +49,7 @@ services:
         volumes:
             - ${PWD}/flask:/opt/app
             - ${PWD}/tmp:/shared
-        links:
+        depends_on:
             - redis
             - rabbitmq
         restart: always
@@ -70,7 +69,7 @@ services:
         volumes:
             - ${PWD}/flask:/opt/app
             - ${PWD}/tmp:/shared
-        links:
+        depends_on:
             - redis
             - rabbitmq
         restart: always
