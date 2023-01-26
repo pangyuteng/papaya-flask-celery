@@ -14,7 +14,7 @@ import requests
 import tempfile
 import pandas as pd
 import pathlib
-
+from jinja2 import Environment, FileSystemLoader
 from celery import Celery, group, subtask, chain, uuid
 import kombu
 import redis
@@ -45,8 +45,12 @@ def get_queue_status():
     # and not those in the queue, we opted for rabbitmq data via kombu
     client = kombu_inst.get_manager()
     queues = client.get_queues('')
-    queue_len=[x for x in queues if 'default' in x['name']][0]['messages_ready']
-    unack_len=[x for x in queues if 'default' in x['name']][0]['messages_unacknowledged']
+    try:
+        queue_len=[x for x in queues if 'default' in x['name']][0]['messages_ready']
+        unack_len=[x for x in queues if 'default' in x['name']][0]['messages_unacknowledged']
+    except:
+        queue_len='na'
+        unack_len='na'
     return {'queue_len':queue_len,'unack_len':unack_len}
 
 def get_task_status(task_id):
@@ -73,11 +77,24 @@ def myjob(self,mydict):
     stdout_file = os.path.join(workdir,'std.out')
     stderr_file = os.path.join(workdir,'std.err')
     try:
-        # TODO: create sh file, subprocess write stdout stderr to files.
-        time.sleep(3)
-        if mydict['extra_sauce']=="YES":
-            raise ValueError("extra_sauce!")
-        
+
+        j2_env = Environment(loader=FileSystemLoader(THIS_DIR),
+                            trim_blocks=True)
+        content = j2_env.get_template('templates/run.sh').render(
+            task_id=task_id,
+            full_name=mydict['full_name'],
+            extra_sauce=mydict['extra_sauce'],
+            workdir=workdir
+        )
+        sh_file = os.path.join(workdir,'run.sh')
+        with open(sh_file,'w') as f:
+            f.write(content)
+        actual_cmd_list = ['cd','workdir','&&','bash','run.sh']
+        with open(stdout_file,"wb") as out, open(stderr_file,"wb") as err:
+            ret_code = subprocess.call(actual_cmd_list,stdout=out,stderr=err,shell=True)
+        if ret_code != 0:
+            raise ValueError("job failed.")
+
         mymessage['done']=True
         with open(done_file,'w') as f:
             f.write(json.dumps(mymessage))
@@ -111,7 +128,6 @@ def email(from_email,to_email,title,message):
 
 
 def get_job_status():
-    mymonitor()
     mylist = []
     for task_id in os.listdir("/shared"):
 

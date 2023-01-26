@@ -10,7 +10,7 @@ result_backend = os.environ["REDIS_URI"]
 beat_schedule = {
     'monitor': {
         'task': 'utils.mymonitor',
-        'schedule': crontab("*/5 * * * * *"),
+        'schedule': crontab("*/1 * * * * *"),
         'args': [],
     },
 }
