@@ -1,0 +1,67 @@
+<html>
+<head>
+<style>
+    body
+    {
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        color: #444444;
+        font-size: 9pt;
+        background-color: #FAFAFA;
+    }
+    img.lazy{
+        width: 128px;
+        height: 128px;
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js" type="text/javascript"></script>
+
+</head>
+<body>
+    <a href="{{url_for('catalog_csv')}}"> download as csv </a>
+    <br><br>
+    <table id="mytable" class="table table-data">
+        <thead>
+        <tr>
+            <th>abc</th>
+            <th>abc</th>
+            <th>abc</th>
+            <th>abc</th>
+            <th>abc_path</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in mylist %}
+        <tr>
+            <td>{{ row.abc }}</td>
+            <td>{{ row.abc }}</td>
+            <td>{{ row.abc }}</td>
+            <td>{{ row.abc }}</td>
+            <td>
+                <a href="{{row.abc_path}}">
+                <img class="lazy" data-original="{{row.abc_path}}" height="128px" width="128px"/>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <script>
+
+        $(document).ready( function () {
+            $('#mytable').DataTable({
+                "pageLength": 5,
+                "drawCallback": function(){
+                    $("img.lazy").lazyload();
+                }
+            });
+        } );
+    </script>
+</body>
+</html>
+
+
+

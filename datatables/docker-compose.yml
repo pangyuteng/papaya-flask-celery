@@ -1,0 +1,26 @@
+
+version: '3'
+services:
+    nginx:
+        user: 1000:1000
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        restart: always
+        volumes:
+            - /mnt/hd2:/mnt/hd2
+        ports:
+            - 10042:80
+    flask:
+        build:
+            context: flask
+            dockerfile: Dockerfile
+        command: python /opt/app.py
+        restart: always
+        env_file:
+            - .env
+        volumes:
+            - /mnt/hd2:/mnt/hd2
+            - $PWD/flask:/opt
+        expose:
+            - 5000

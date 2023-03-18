@@ -1,0 +1,5 @@
+hvac==1.0.2
+psycopg2==2.9.5
+pymongo==4.3.3
+flask==2.2.3
+pandas==1.5.3
