@@ -1,3 +1,11 @@
+
+```
+
+this my personal stash of hello-world web-apps.
+
+
+```
+
 ## the project name may change...
 
 
@@ -25,6 +33,22 @@ Docker - https://www.docker.com
 docker-compose build
 docker-compose up
 ```
+
+## other hello-world apps...
+
+`dragndrop` - drag-n-drop
+`fast-nii-viz` - explore responsive infinte scroll with nifti?
+`one-page-app` - user-interface to trigger long running bash
+`itsdangerous` - understanding authentication 
+`post-axios` - understanding using js lib axios to call rest
+`serialization` - ...serialization
+`serverless` - static htmls
+`stl*` - visualzation of stl files
+`upload` - understanding REST POST 
+`workflow` - understanding chaining celery jobs, conclusion, doable but dont do it, hard to debug/visualize - most likely not be easy to maintain.
+
+
+
 
 ## check out the images with the Papaya viewer that you are now hosting!
 

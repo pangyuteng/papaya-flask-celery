@@ -32,7 +32,8 @@ task_serializer='pickle'
 result_serializer='pickle'
 accept_content=['pickle','application/json']
 # set an abnormally high value for timeout to prevent job being retried over and over again
-broker_transport_options = {'visibility_timeout': 604800} # 604800 seconds == 7 days
+broker_transport_options = {'visibility_timeout': 86400}
+result_backend_transport_options = {'visibility_timeout': 86400}
 worker_prefetch_multiplier = 1
 task_acks_late = True
 broker_heartbeat = 0
