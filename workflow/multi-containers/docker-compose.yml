@@ -1,0 +1,51 @@
+version: '3'
+services:
+    redis:
+        image: redis:latest
+        hostname: redis
+        ports:
+            - 6379:6379
+    rabbitmq:
+        image: rabbitmq:management
+        hostname: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+    # flower:
+    #     image: myimage
+    #     ports:
+    #         - 5555:5555
+    #     links:
+    #         - rabbitmq
+    #         - worker
+    #     command: flower --address=* --port=5555 --broker=amqp://rabbitmq:5672
+    worker0:
+        environment:
+            AMQP_URI: amqp://rabbitmq:5672
+            REDIS_URI: redis://redis:6379/1
+            C_FORCE_ROOT: "true"
+        image: multi-container-app0
+        build:
+            context: .
+            dockerfile: Dockerfile.app0
+        links:
+            - rabbitmq
+            - redis
+        command: celery -A app worker -Q default --loglevel=INFO --pool=solo --concurrency=1
+        #volumes:
+        #    - $PWD:/opt
+    worker1:
+        environment:
+            AMQP_URI: amqp://rabbitmq:5672
+            REDIS_URI: redis://redis:6379/1
+            C_FORCE_ROOT: "true"
+        image: multi-container-app1
+        build:
+            context: .
+            dockerfile: Dockerfile.app1
+        links:
+            - rabbitmq
+            - redis
+        command: celery -A app worker -Q default --loglevel=INFO --pool=solo --concurrency=1
+        #volumes:
+        #    - $PWD:/opt

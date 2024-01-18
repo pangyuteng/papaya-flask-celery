@@ -1,0 +1,9 @@
+FROM python:3.8-bullseye
+COPY requirements.txt /opt
+WORKDIR /opt
+RUN pip install -U pip
+RUN pip install -r requirements.txt
+
+COPY app0.py /opt/app.py
+COPY celeryconfig0.py /opt/celeryconfig0.py
+COPY trigger.py /opt/trigger.py
