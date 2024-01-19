@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__file__)
 import os
 import time
 import random
@@ -10,16 +12,17 @@ app.config_from_object(celeryconfig0)
 
 @app.task()
 def sub_task():
-    # actual logic lives in 
-    pass
+    # actual logic lives in app1.py
+    raise ValueError()
 
 @app.task()
 def main_task():
     result = sub_task.apply_async()
     
     while not result.ready():
-        print(result.ready())
+        logger.info(f"result.ready() {result.ready()}")
         time.sleep(1)
+    logger.info(f"result.ready() {result.ready()}")
     out = result.result
-    print(out,'!!!!!!!!!!!!!!11')
+    logger.info(f"results: {out}")
     return out
