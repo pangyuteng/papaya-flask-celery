@@ -11,7 +11,11 @@ app = Celery()
 app.config_from_object(celeryconfig1)
 
 @app.task()
-def sub_task():
-    logger.info("app1.sub_task running!!")
-    time.sleep(5)
-    return 1,2
+def sub_task(var0,var1,mybool=False):
+    logger.info("app1.sub_task started.")
+    logger.info(f"{var0} {var1} {mybool}")
+    logger.info("sleeping for 10 seconds.")
+    time.sleep(10)
+    var2 = var0 + var1
+    logger.info("app1.sub_task done.")
+    return var2

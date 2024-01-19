@@ -17,12 +17,17 @@ def sub_task():
 
 @app.task()
 def main_task():
-    result = sub_task.apply_async()
-    
+    logger.info("app0.main_task started.")
+    logger.info("app0.main_task triggering sub_task...")
+
+    args, kwargs = [1,2],{'mybool': True}
+    result = sub_task.apply_async(args, kwargs)
+
     while not result.ready():
         logger.info(f"result.ready() {result.ready()}")
-        time.sleep(1)
+        time.sleep(2)
     logger.info(f"result.ready() {result.ready()}")
     out = result.result
-    logger.info(f"results: {out}")
+    logger.info(f"results: {type(out)},{out}")
+    logger.info("app0.main_task done.")
     return out
