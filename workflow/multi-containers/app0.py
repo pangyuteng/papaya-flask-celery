@@ -11,7 +11,7 @@ app = Celery()
 app.config_from_object(celeryconfig0)
 
 @app.task()
-def sub_task():
+def sub_task(var0,var1,mybool=False):
     # actual logic lives in app1.py
     raise ValueError()
 
