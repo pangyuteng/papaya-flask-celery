@@ -1,28 +1,74 @@
+
+
 <!DOCTYPE html>
 <html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">           <script type="text/javascript" src="https://unpkg.com/vtk.js@8.3.3/dist/vtk.js"></script>
+    <title>Vtk.js in div</title>
+  </head>
 <body>
-<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
-<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
-<script type="text/javascript">
+  <header>
+    <h1>Example to display vtk.js renderer in a specific div</h1>
+  </header>
+  <script type="text/javascript">
+    //Select div for rendering
+    const vtkRenderScreen = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance({
+      container: document.querySelector('#vtk-renderer'),
+      background: [0.,0.,0.]
+    });
+    
+
+    const actor                  = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper                 = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+    
+    //const cone                   = vtk.Filters.Sources.vtkConeSource.newInstance();
+    const reader = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    reader.setUrl("./keystone.stl",{ binary: true });
+    reader.update();
+    
+    // create orientation widget
+    
+    const axes                   = vtk.Rendering.Core.vtkAxesActor.newInstance();
+    const orientationWidget = vtk.Interaction.Widgets.vtkOrientationMarkerWidget.newInstance({
+      actor: axes,
+      interactor: vtkRenderScreen.getRenderWindow().getInteractor(),
+    });
+    orientationWidget.setEnabled(true);
+    orientationWidget.setViewportCorner(
+      vtk.Interaction.Widgets.vtkOrientationMarkerWidget.Corners.BOTTOM_RIGHT
+    );
+    orientationWidget.setViewportSize(1000);
+    orientationWidget.setMinPixelSize(100);
+    orientationWidget.setMaxPixelSize(300);
+    
+    actor.setMapper(mapper);
+    mapper.setInputConnection(reader.getOutputPort());
+    vtkRenderScreen.getRenderer().addActor(actor);
+
+
+    var renderer = vtkRenderScreen.getRenderer();
+    vtkRenderScreen.getRenderer().resetCamera();
+    vtkRenderScreen.getRenderWindow().render();
   
-  //var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+    var camera = renderer.getActiveCamera();
+    camera.setPosition(0.4,0.4,1000);
+    vtkRenderScreen.getRenderWindow().render();
 
-  var fullScreenRenderer = vtk.Rendering.OpenGL.vtkRenderWindow.newInstance();
-  
-  var actor              = vtk.Rendering.Core.vtkActor.newInstance();
-  var mapper             = vtk.Rendering.Core.vtkMapper.newInstance();
-  var cone               = vtk.Filters.Sources.vtkConeSource.newInstance();
-
-  actor.setMapper(mapper);
-  mapper.setInputConnection(cone.getOutputPort());
-
-  //var renderer = fullScreenRenderer.getRenderer();
-  var renderer = fullScreenRenderer.getRenderable();
-  renderer.addActor(actor);
-  renderer.resetCamera();
-
-  var renderWindow = fullScreenRenderer.getRenderWindow();
-  renderWindow.render();
-</script>
+  </script>
+  <section>
+    <div class="container-flow">
+      <div class="row">
+        <div id="vtk-renderer" class="col-12 col-sm-4" style="height: 200px; padding: 0px;"></div>
+        <div class="col-12 col-sm-8">
+          <h3>This example in inspired from :</h3>
+          <ul>
+            <li><a href="https://kitware.github.io/vtk-js/docs/intro_vtk_as_external_script.html">Documentation script usage</a></li>
+            <li><a href="https://github.com/Kitware/vtk-js/issues/150">G????ithub issue</a></li>
+            <li><a href="https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Misc/FullScreenRenderWindow/index.js">Source code of FullScreenRenderWindow</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
 </html>
