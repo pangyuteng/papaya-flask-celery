@@ -1,0 +1,60 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">           <script type="text/javascript" src="https://unpkg.com/vtk.js@8.3.3/dist/vtk.js"></script>
+    <title>Vtk.js in div</title>
+  </head>
+<body>
+  <header>
+    <h1>Example to display vtk.js renderer in a specific div</h1>
+  </header>
+  <script type="text/javascript">
+    //Select div for rendering
+    const vtkRenderScreen = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance({
+      container: document.querySelector('#vtk-renderer'),
+      background: [0.,0.,0.]
+    });
+    
+    const actor = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+    const reader = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    reader.setUrl("./lung_vessels.stl");
+    //reader.update();
+
+    // create orientation widget
+    //actor.setPosition(0,0,0);
+    //actor.setScale(0.01,0.01,0.01);
+    actor.setMapper(mapper);
+    mapper.setInputConnection(reader.getOutputPort());
+    
+    var renderer = vtkRenderScreen.getRenderer();
+    renderer.addActor(actor);
+    renderer.resetCamera();
+      
+    var camera = renderer.getActiveCamera();
+    //camera.setPosition(0,0,1);
+    //camera.setFocalPoint(0,0,0);
+
+    var renderWindow = vtkRenderScreen.getRenderWindow();
+    renderWindow.render();
+
+  </script>
+  <section>
+    <div class="container-flow">
+      <div class="row">
+        <div id="vtk-renderer" class="col-12 col-sm-4" style="height: 200px; padding: 0px;"></div>
+        <div class="col-12 col-sm-8">
+          <h3>This example in inspired from :</h3>
+          <ul>
+            <li><a href="https://kitware.github.io/vtk-js/docs/intro_vtk_as_external_script.html">Documentation script usage</a></li>
+            <li><a href="https://gith4ub.com/Kitware/vtk-js/issues/150">G????ithub issue</a></li>
+            <li><a href="https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Misc/FullScreenRenderWindow/index.js">Source code of FullScreenRenderWindow</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
