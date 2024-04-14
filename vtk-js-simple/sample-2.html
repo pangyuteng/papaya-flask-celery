@@ -28,10 +28,16 @@
 
     const actor_vsl = vtk.Rendering.Core.vtkActor.newInstance();
     const mapper_vsl = vtk.Rendering.Core.vtkMapper.newInstance();
-    const reader_vsl = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+
+    // ??? unable to load 
+    // const reader_vsl = vtk.IO.Legacy.vtkPolyDataReader.newInstance();
+    // reader_vsl.setUrl("./lung_vessels.vtk",{ binary: true });
+    // reader_vsl.update();
+
+    // able to load, but have "No input!" console error, camera position not right, thus not in view.
+    const reader_vsl = vtk.IO.Geometry.vtkSTLReader.newInstance();
     reader_vsl.setUrl("./lung_vessels.stl",{ binary: true });
     reader_vsl.update();
-
 
     // create orientation widget
     
@@ -52,9 +58,9 @@
     mapper.setInputConnection(reader.getOutputPort());
     vtkRenderScreen.getRenderer().addActor(actor);
     
-    // actor_vsl.setMapper(mapper_vsl);
-    // mapper.setInputConnection(reader_vsl.getOutputPort());
-    // vtkRenderScreen.getRenderer().addActor(actor_vsl);
+    actor_vsl.setMapper(mapper_vsl);
+    mapper.setInputConnection(reader_vsl.getOutputPort());
+    vtkRenderScreen.getRenderer().addActor(actor_vsl);
     
     var renderer = vtkRenderScreen.getRenderer();
     vtkRenderScreen.getRenderer().resetCamera();
