@@ -18,17 +18,24 @@
     });
     
 
-    const actor                  = vtk.Rendering.Core.vtkActor.newInstance();
-    const mapper                 = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
-    
+    const actor = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
     //const cone                   = vtk.Filters.Sources.vtkConeSource.newInstance();
     const reader = vtk.IO.Geometry.vtkSTLReader.newInstance();    
     reader.setUrl("./keystone.stl",{ binary: true });
     reader.update();
-    
+
+    /*
+    const actor_vsl = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper_vsl = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+    const reader_vsl = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    reader_vsl.setUrl("./lung_vessels.stl",{ binary: true });
+    reader_vsl.update();
+    */
+
     // create orientation widget
     
-    const axes                   = vtk.Rendering.Core.vtkAxesActor.newInstance();
+    const axes = vtk.Rendering.Core.vtkAxesActor.newInstance();
     const orientationWidget = vtk.Interaction.Widgets.vtkOrientationMarkerWidget.newInstance({
       actor: axes,
       interactor: vtkRenderScreen.getRenderWindow().getInteractor(),
@@ -44,8 +51,11 @@
     actor.setMapper(mapper);
     mapper.setInputConnection(reader.getOutputPort());
     vtkRenderScreen.getRenderer().addActor(actor);
-
-
+    /*
+    actor_vsl.setMapper(mapper_vsl);
+    mapper.setInputConnection(reader_vsl.getOutputPort());
+    vtkRenderScreen.getRenderer().addActor(actor_vsl);
+    */
     var renderer = vtkRenderScreen.getRenderer();
     vtkRenderScreen.getRenderer().resetCamera();
     vtkRenderScreen.getRenderWindow().render();
