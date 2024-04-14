@@ -23,9 +23,6 @@
     reader.setUrl("./lung_vessels.stl");
     //reader.update();
 
-    // create orientation widget
-    //actor.setPosition(0,0,0);
-    //actor.setScale(0.01,0.01,0.01);
     actor.setMapper(mapper);
     mapper.setInputConnection(reader.getOutputPort());
     
@@ -34,8 +31,8 @@
     renderer.resetCamera();
       
     var camera = renderer.getActiveCamera();
-    //camera.setPosition(0,0,1);
-    //camera.setFocalPoint(0,0,0);
+    camera.setPosition(10,10,100);
+    camera.setFocalPoint(0,0,0);
 
     var renderWindow = vtkRenderScreen.getRenderWindow();
     renderWindow.render();
