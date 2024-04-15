@@ -31,6 +31,8 @@
     mapper.setInputConnection(reader.getOutputPort());
     actor.getProperty().setColor(1.0, 0.0, 0.0);
 
+    const axesActor = vtk.Rendering.Core.vtkAxesActor.newInstance();
+
     var camera = renderer.getActiveCamera();
     console.log("camera info:");
     console.log(camera.getPosition());
@@ -40,6 +42,7 @@
     console.log(camera.getViewUp());
 
     renderer.addActor(actor);
+    renderer.addActor(axesActor);
     renderer.resetCamera();
 
     console.log("camera info:");
@@ -49,11 +52,25 @@
     console.log(camera.getDirectionOfProjection());
     console.log(camera.getViewUp());
 
-    //fucking finally...
+    //
     // stl file is large, so there is a lag to load the data.
-    camera.setPosition(150,400,150);
-    camera.setFocalPoint(150,150,150);// [-40, 40, -10, 10, 0, 35]
-    camera.setClippingRange(0,400);
+    // if renderwindow update is triggered before data loading
+    // consoloe will log "No input!"
+    //
+
+    // ffff finally...
+    // camera.setPosition(150,400,150);
+    // camera.setFocalPoint(150,150,150);// [-40, 40, -10, 10, 0, 35]
+    // camera.setClippingRange(-10,400);
+    // camera.setDirectionOfProjection(0,-1,0);
+    // camera.setViewUp(0,0,-1);
+
+    // added axesActor, and moving actor, to see if interactor can be used to rotate 
+    // actour about 0,0,0
+    actor.setPosition(-150,-200,-150);
+    camera.setPosition(0,400,0);
+    camera.setFocalPoint(0,0,0);// [-40, 40, -10, 10, 0, 35]
+    camera.setClippingRange(-1000,1000);
     camera.setDirectionOfProjection(0,-1,0);
     camera.setViewUp(0,0,-1);
 
@@ -67,6 +84,7 @@
     renderWindow.render();
 
     console.log("actor info:");
+    console.log(actor.getPosition());
     console.log(actor.getCenter());
     console.log(actor.getBounds());
 
