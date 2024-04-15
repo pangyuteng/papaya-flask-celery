@@ -16,32 +16,64 @@
       container: document.querySelector('#vtk-renderer'),
       background: [0.,0.,0.]
     });
+    var renderer = vtkRenderScreen.getRenderer();
     
     const actor = vtk.Rendering.Core.vtkActor.newInstance();
     const mapper = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
     const reader = vtk.IO.Geometry.vtkSTLReader.newInstance();    
     reader.setUrl("./lung_vessels.stl");
+    //reader.setUrl("./keystone.stl");
     //reader.update();
 
     actor.setMapper(mapper);
     mapper.setInputConnection(reader.getOutputPort());
     
-    var renderer = vtkRenderScreen.getRenderer();
+    var camera = renderer.getActiveCamera();
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+
     renderer.addActor(actor);
     renderer.resetCamera();
-      
-    var camera = renderer.getActiveCamera();
-    camera.setPosition(10,10,100);
-    camera.setFocalPoint(0,0,0);
+
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+
+    //fucking finally...
+    // stl file is large, so there is a lag to load the data.
+    camera.setPosition(150,400,150);
+    camera.setFocalPoint(150,150,150);// [-40, 40, -10, 10, 0, 35]
+    camera.setClippingRange(0,400);
+    camera.setDirectionOfProjection(0,-1,0);
+    camera.setViewUp(0,0,-1);
+
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
 
     var renderWindow = vtkRenderScreen.getRenderWindow();
     renderWindow.render();
+
+    console.log("actor info:");
+    console.log(actor.getCenter());
+    console.log(actor.getBounds());
 
   </script>
   <section>
     <div class="container-flow">
       <div class="row">
         <div id="vtk-renderer" class="col-12 col-sm-4" style="height: 200px; padding: 0px;"></div>
+        <!--
         <div class="col-12 col-sm-8">
           <h3>This example in inspired from :</h3>
           <ul>
@@ -50,8 +82,10 @@
             <li><a href="https://github.com/Kitware/vtk-js/blob/master/Sources/Rendering/Misc/FullScreenRenderWindow/index.js">Source code of FullScreenRenderWindow</a></li>
           </ul>
         </div>
+        -->
       </div>
     </div>
   </section>
 </body>
 </html>
+
