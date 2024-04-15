@@ -17,6 +17,8 @@
       background: [0.,0.,0.]
     });
     var renderer = vtkRenderScreen.getRenderer();
+    var renderWindow = vtkRenderScreen.getRenderWindow();
+    var interactor = vtkRenderScreen.getRenderWindow().getInteractor();
     
     const actor = vtk.Rendering.Core.vtkActor.newInstance();
     const mapper = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
@@ -27,7 +29,8 @@
 
     actor.setMapper(mapper);
     mapper.setInputConnection(reader.getOutputPort());
-    
+    actor.getProperty().setColor(1.0, 0.0, 0.0);
+
     var camera = renderer.getActiveCamera();
     console.log("camera info:");
     console.log(camera.getPosition());
@@ -61,7 +64,6 @@
     console.log(camera.getDirectionOfProjection());
     console.log(camera.getViewUp());
 
-    var renderWindow = vtkRenderScreen.getRenderWindow();
     renderWindow.render();
 
     console.log("actor info:");
