@@ -1,0 +1,143 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script type="text/javascript" src="https://unpkg.com/vtk.js@8.3.3/dist/vtk.js"></script>
+    <script type="text/javascript" src="https://unpkg.io/itk-vtk-viewer@9.14.1/dist/itkVtkViewerCDN.js"></script>
+    <!--
+      https://kitware.github.io/itk-vtk-viewer/docs/embeddedViewer.html
+    -->
+    <title>Vtk.js in div</title>
+  </head>
+<body>
+  <header>
+    <h1>Example to display vtk.js renderer in a specific div</h1>
+  </header>
+  <script type="text/javascript">
+    //Select div for rendering
+    const vtkRenderScreen = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance({
+      container: document.querySelector('#vtk-renderer'),
+      background: [0.,0.,0.]
+    });
+    var renderer = vtkRenderScreen.getRenderer();
+    var renderWindow = vtkRenderScreen.getRenderWindow();
+    var interactor = vtkRenderScreen.getRenderWindow().getInteractor();
+    
+    const reader_rul = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    const actor_rul = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper_rul = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+
+    reader_rul.setUrl("./rul.stl");
+
+    actor_rul.setMapper(mapper_rul);
+    mapper_rul.setInputConnection(reader_rul.getOutputPort());
+    actor_rul.getProperty().setColor(1.0, 1.0, 1.0);
+    actor_rul.getProperty().setOpacity(1.0);
+
+    const reader_rml = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    const actor_rml = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper_rml = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+
+    reader_rml.setUrl("./rml.stl");
+
+    actor_rml.setMapper(mapper_rml);
+    mapper_rml.setInputConnection(reader_rml.getOutputPort());
+    actor_rml.getProperty().setColor(1.0, 0.0, 0.0);
+    actor_rml.getProperty().setOpacity(0.7);
+
+    const reader_rll = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    const actor_rll = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper_rll = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+
+    reader_rll.setUrl("./rll.stl");
+
+    actor_rll.setMapper(mapper_rll);
+    mapper_rll.setInputConnection(reader_rll.getOutputPort());
+    actor_rll.getProperty().setColor(1.0, 0.8, 0.8);
+    actor_rll.getProperty().setOpacity(0.2);
+
+    const reader_lul = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    const actor_lul = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper_lul = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+
+    reader_lul.setUrl("./lul.stl");
+
+    actor_lul.setMapper(mapper_lul);
+    mapper_lul.setInputConnection(reader_lul.getOutputPort());
+    actor_lul.getProperty().setColor(0.0, 1.0, 0.0);
+    actor_lul.getProperty().setOpacity(0.2);
+
+    const reader_lll = vtk.IO.Geometry.vtkSTLReader.newInstance();    
+    const actor_lll = vtk.Rendering.Core.vtkActor.newInstance();
+    const mapper_lll = vtk.Rendering.Core.vtkMapper.newInstance({ scalarVisibility: false });
+
+    reader_lll.setUrl("./lll.stl");
+
+    actor_lll.setMapper(mapper_lll);
+    mapper_lll.setInputConnection(reader_lll.getOutputPort());
+    actor_lll.getProperty().setColor(1.0, 1.0, 0.0);
+    actor_lll.getProperty().setOpacity(0.2);
+
+    const axesActor = vtk.Rendering.Core.vtkAxesActor.newInstance();
+
+    var camera = renderer.getActiveCamera();
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+
+    renderer.addActor(axesActor);
+    renderer.addActor(actor_rul);
+    renderer.addActor(actor_rml);
+    renderer.addActor(actor_rll);
+    renderer.addActor(actor_lul);
+    renderer.addActor(actor_lll);
+    renderer.resetCamera();
+
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+
+    actor_rul.setPosition(-150,-200,-150);
+    actor_rml.setPosition(-150,-200,-150);
+    actor_rll.setPosition(-150,-200,-150);
+    actor_lul.setPosition(-150,-200,-150);
+    actor_lll.setPosition(-150,-200,-150);
+    camera.setPosition(0,400,0);
+    camera.setFocalPoint(0,0,0);// [-40, 40, -10, 10, 0, 35]
+    camera.setClippingRange(-1000,1000);
+    camera.setDirectionOfProjection(0,-1,0);
+    camera.setViewUp(0,0,1);
+
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+
+    renderWindow.render();
+
+    console.log("actor info:");
+    console.log(actor_rml.getPosition());
+    console.log(actor_rml.getCenter());
+    console.log(actor_rml.getBounds());
+
+  </script>
+  <section>
+    <div class="container-flow">
+      <div class="row">
+        <div id="vtk-renderer" class="col-12 col-sm-4" style="height: 200px; padding: 0px;"></div>
+
+      </div>
+    </div>
+  </section>
+</body>
+</html>
