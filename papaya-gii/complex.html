@@ -10,7 +10,7 @@
         var myCustomColorTable = function() { };
         myCustomColorTable.prototype.lookupRed = function (screenVal, imageVal) {
             if (imageVal == 1) return 0; 
-            if (imageVal == 2) return 255; 
+            if (imageVal == 2) return 100; 
             if (imageVal == 3) return 255; 
             if (imageVal == 4) return 0; 
             if (imageVal == 5) return 255; 
@@ -20,7 +20,7 @@
         };
         myCustomColorTable.prototype.lookupGreen = function (screenVal, imageVal) {
             if (imageVal == 1) return 255; 
-            if (imageVal == 2) return 0; 
+            if (imageVal == 2) return 100; 
             if (imageVal == 3) return 255; 
             if (imageVal == 4) return 255; 
             if (imageVal == 5) return 255; 
@@ -31,7 +31,7 @@
         };
         myCustomColorTable.prototype.lookupBlue = function (screenVal, imageVal) {
             if (imageVal == 1) return 0; 
-            if (imageVal == 2) return 0; 
+            if (imageVal == 2) return 255; 
             if (imageVal == 3) return 0; 
             if (imageVal == 4) return 0; 
             if (imageVal == 5) return 0; 
@@ -41,20 +41,20 @@
 
         };
         var params = [];
-        params["radiological"] = true;
-        params["smoothDisplay"] = false;
         params["images"] = ["./tlc.nii.gz","./merged.nii.gz"];
         params["surfaces"] = ["./rul.gii","./rml.gii","./rll.gii","./lul.gii","./lll.gii","./vessel.gii","./airway.gii","./valve.gii"];
         params["tlc.nii.gz"] = {"min": -1350, "max":150};
         params["merged.nii.gz"]  = {"lut": new myCustomColorTable(),"min":0,"max":8,"alpha":0.5};
         params["rul.gii"] = {color: [0, 1, 0], alpha: 0.1}; //1
-        params["rml.gii"] = {color: [1, 0, 0], alpha: 0.1}; //2
+        params["rml.gii"] = {color: [0.6, 0.6, 1], alpha: 0.1}; //2
         params["rll.gii"] = {color: [1, 1, 0], alpha: 0.1}; //3
         params["lul.gii"] = {color: [0, 1, 0], alpha: 0.1}; //4
         params["lll.gii"] = {color: [1, 1, 0], alpha: 0.1}; //5 
         params["vessel.gii"] = {color: [1, 0, 0], alpha: 0.9}; //6
         params["airway.gii"] = {color: [1, 0.6, 0.6], alpha: 0.6}; //7
         params["valve.gii"] = {color: [1,1,1], alpha: 1}; //8
+        params["radiological"] = true;
+        params["smoothDisplay"] = false;
     </script>
 </head>
 <body>
