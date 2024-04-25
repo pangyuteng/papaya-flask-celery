@@ -6,24 +6,58 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/papaya-viewer@1.0.1455/release/current/standard/papaya.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/papaya-viewer@1.0.1455/release/current/standard/papaya.min.js"></script>
-
     <script type="text/javascript">
-        var params = [];
-        params["images"] = ["./tlc.nii.gz"];
-        params["surfaces"] = ["./rul.gii","./rml.gii","./rll.gii","./lul.gii","./lll.gii","./vessel.gii","./airway.gii","./valve.gii"];
-        params["rul.gii"] = {color: [0, 1, 0], alpha: 0.1};
-        params["rml.gii"] = {color: [1, 0, 0], alpha: 0.1};
-        params["rll.gii"] = {color: [0, 1, 1], alpha: 0.1};
-        params["lul.gii"] = {color: [0, 1, 0], alpha: 0.1};
-        params["lll.gii"] = {color: [0, 1, 1], alpha: 0.1};
-        params["vessel.gii"] = {color: [1, 0, 0], alpha: 0.9};
-        params["airway.gii"] = {color: [1, 0.6, 0.6], alpha: 0.6};
-        params["valve.gii"] = {color: [1,1,1], alpha: 1};
-    </script>
+        var myCustomColorTable = function() { };
+        myCustomColorTable.prototype.lookupRed = function (screenVal, imageVal) {
+            if (imageVal == 1) return 0; 
+            if (imageVal == 2) return 255; 
+            if (imageVal == 3) return 255; 
+            if (imageVal == 4) return 0; 
+            if (imageVal == 5) return 255; 
+            if (imageVal == 6) return 255; 
+            if (imageVal == 7) return 255; 
+            if (imageVal == 8) return 255; 
+        };
+        myCustomColorTable.prototype.lookupGreen = function (screenVal, imageVal) {
+            if (imageVal == 1) return 255; 
+            if (imageVal == 2) return 0; 
+            if (imageVal == 3) return 255; 
+            if (imageVal == 4) return 255; 
+            if (imageVal == 5) return 255; 
+            if (imageVal == 6) return 0; 
+            if (imageVal == 7) return 100; 
+            if (imageVal == 8) return 255; 
 
+        };
+        myCustomColorTable.prototype.lookupBlue = function (screenVal, imageVal) {
+            if (imageVal == 1) return 0; 
+            if (imageVal == 2) return 0; 
+            if (imageVal == 3) return 0; 
+            if (imageVal == 4) return 0; 
+            if (imageVal == 5) return 0; 
+            if (imageVal == 6) return 0; 
+            if (imageVal == 7) return 100; 
+            if (imageVal == 8) return 255; 
+
+        };
+        var params = [];
+        params["radiological"] = true;
+        params["smoothDisplay"] = false;
+        params["images"] = ["./tlc.nii.gz","./merged.nii.gz"];
+        params["surfaces"] = ["./rul.gii","./rml.gii","./rll.gii","./lul.gii","./lll.gii","./vessel.gii","./airway.gii","./valve.gii"];
+        params["tlc.nii.gz"] = {"min": -1350, "max":150};
+        params["merged.nii.gz"]  = {"lut": new myCustomColorTable(),"min":0,"max":8,"alpha":0.5};
+        params["rul.gii"] = {color: [0, 1, 0], alpha: 0.1}; //1
+        params["rml.gii"] = {color: [1, 0, 0], alpha: 0.1}; //2
+        params["rll.gii"] = {color: [1, 1, 0], alpha: 0.1}; //3
+        params["lul.gii"] = {color: [0, 1, 0], alpha: 0.1}; //4
+        params["lll.gii"] = {color: [1, 1, 0], alpha: 0.1}; //5 
+        params["vessel.gii"] = {color: [1, 0, 0], alpha: 0.9}; //6
+        params["airway.gii"] = {color: [1, 0.6, 0.6], alpha: 0.6}; //7
+        params["valve.gii"] = {color: [1,1,1], alpha: 1}; //8
+    </script>
 </head>
 <body>
-    hello papaya.js
     <div class="papaya" data-params="params"></div>
 </body>
 </html>
