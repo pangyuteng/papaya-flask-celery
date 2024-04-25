@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Papaya</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/papaya-viewer@1.0.1455/release/current/standard/papaya.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/papaya-viewer@1.0.1455/release/current/standard/papaya.min.js"></script>
+
+    <script type="text/javascript">
+        var params = [];
+        params["images"] = ["./tlc.nii.gz"];
+        params["surfaces"] = ["./rul.gii","./rml.gii","./rll.gii","./lul.gii","./lll.gii","./vessel.gii","./airway.gii","./valve.gii"];
+        params["rul.gii"] = {color: [0, 1, 0], alpha: 0.1};
+        params["rml.gii"] = {color: [1, 0, 0], alpha: 0.1};
+        params["rll.gii"] = {color: [0, 1, 1], alpha: 0.1};
+        params["lul.gii"] = {color: [0, 1, 0], alpha: 0.1};
+        params["lll.gii"] = {color: [0, 1, 1], alpha: 0.1};
+        params["vessel.gii"] = {color: [1, 0, 0], alpha: 0.9};
+        params["airway.gii"] = {color: [1, 0.6, 0.6], alpha: 0.6};
+        params["valve.gii"] = {color: [1,1,1], alpha: 1};
+    </script>
+
+</head>
+<body>
+    hello papaya.js
+    <div class="papaya" data-params="params"></div>
+</body>
+</html>
