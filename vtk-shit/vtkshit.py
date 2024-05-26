@@ -213,7 +213,7 @@ if __name__ == "__main__":
     for x in range(3):
         sliceMaxArr = inst.maskReader.GetDataExtent()[1::2]
         sliceMax = sliceMaxArr[x]
-        for y in np.linspace(0,sliceMax,20):
+        for y in np.linspace(0,sliceMax,50):
             png_file = inst.render(x,int(y))
             png_list.append(png_file)
 
