@@ -44,7 +44,178 @@ class NiftiVisualizer(object):
             maskLut.Build()
         self.maskLut = maskLut
 
-    def setup_pipeline(self):
+    def gen_isosurface(self):
+
+        reader = vtk.vtkNIFTIImageReader()
+        reader.SetFileName(self.mask_file)
+        reader.Update()
+
+
+        threshold = vtk.vtkImageThreshold()
+        threshold.SetInputConnection(reader.GetOutputPort())
+        threshold.ThresholdBetween(1,8)
+        threshold.ReplaceInOn()
+        threshold.SetInValue(1)
+        threshold.ReplaceOutOn()
+        threshold.SetOutValue(0)
+        threshold.Update()
+
+        dmc = vtk.vtkDiscreteMarchingCubes()
+        dmc.SetInputConnection(threshold.GetOutputPort())
+        dmc.GenerateValues(1, 1, 1)
+        dmc.Update()
+
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputConnection(dmc.GetOutputPort())
+        mapper.Update()
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
+        mapper.ScalarVisibilityOff()
+        actor.GetProperty().SetColor((1,1,1))
+        actor.GetProperty().SetOpacity(1)
+        actor.RotateX(270)
+        center = actor.GetCenter()
+        
+        opq_val = 0.5
+        mapper = [
+            (1,(1,0,0),opq_val,'1'),
+            (2,(0,1,0),opq_val,'2'),
+            (3,(0,0,1),opq_val,'3'),
+            (4,(1,1,0),opq_val,'4'),
+            (5,(0,1,1),opq_val,'5'),
+            (6,(1,0,1),opq_val,'6'),
+            (7,(0.5,0.5,0),opq_val,'7'),
+            (8,(0,0.5,0.5),opq_val,'8'),
+        ]
+        
+        mylist = []
+        for int_val,color,opacity,abbrv in mapper:
+
+            threshold = vtk.vtkImageThreshold()
+            threshold.SetInputConnection(reader.GetOutputPort())
+            threshold.ThresholdBetween(int_val,int_val)
+            threshold.ReplaceInOn()
+            threshold.SetInValue(0)
+            threshold.ReplaceOutOn()
+            threshold.SetOutValue(1)
+            threshold.Update()
+
+            dmc = vtk.vtkDiscreteMarchingCubes()
+            dmc.SetInputConnection(threshold.GetOutputPort())
+            dmc.GenerateValues(1, 1, 1)
+            dmc.Update()
+
+            smoothing_iterations = 15
+            pass_band = 0.001
+            feature_angle = 120.0
+                
+            mapper = vtk.vtkPolyDataMapper()
+            mapper.SetInputConnection(dmc.GetOutputPort())
+            mapper.Update()
+
+            actor = vtk.vtkActor()
+            actor.SetMapper(mapper)
+            mapper.ScalarVisibilityOff()
+
+            actor.GetProperty().SetColor(color)
+            actor.GetProperty().SetOpacity(opacity)
+            actor.RotateX(270)
+            mylist.append(actor)
+        
+        renderer = vtk.vtkRenderer()
+        renderWindow = vtk.vtkRenderWindow()
+        renderWindow.SetSize(self.width,self.height)
+
+        renderWindow.SetOffScreenRendering(1)
+        renderWindow.AddRenderer(renderer)
+
+        for actor in mylist:
+            renderer.AddActor(actor)
+
+        renderer.SetBackground(self.background)
+
+        camera = renderer.MakeCamera()
+        camera.SetPosition(0,0,800)
+        camera.SetFocalPoint(center)
+
+        renderer.SetActiveCamera(camera)
+        renderWindow.Render()
+
+        print(renderWindow.GetScreenSize())
+
+        focal_point = camera.GetFocalPoint()
+        view_up = camera.GetViewUp()
+        position = camera.GetPosition() 
+
+        axis = [0,0,0]
+        axis[0] = -1*camera.GetViewTransformMatrix().GetElement(0,0)
+        axis[1] = -1*camera.GetViewTransformMatrix().GetElement(0,1)
+        axis[2] = -1*camera.GetViewTransformMatrix().GetElement(0,2)
+
+        frame_list = []
+        for n,q in enumerate([10]*35):
+
+            transform = vtk.vtkTransform()
+            transform.Identity()
+
+            transform.Translate(*center)
+            transform.RotateWXYZ(q,view_up)
+            transform.RotateWXYZ(0,axis)
+            transform.Translate(*[-1*x for x in center])
+
+            new_position = [0,0,0]
+            new_focal_point = [0,0,0]
+            transform.TransformPoint(position,new_position)
+            transform.TransformPoint(focal_point,new_focal_point)
+
+            camera.SetPosition(new_position)
+            camera.SetFocalPoint(new_focal_point)
+
+            focal_point = camera.GetFocalPoint()
+            view_up = camera.GetViewUp()
+            position = camera.GetPosition() 
+
+            camera.OrthogonalizeViewUp()
+            renderer.ResetCameraClippingRange()
+            
+            renderWindow.Render()
+            windowToImageFilter = vtk.vtkWindowToImageFilter()
+            windowToImageFilter.SetInput(renderWindow)
+            windowToImageFilter.Update()
+
+            writer = vtk.vtkPNGWriter()
+            
+            fpath = os.path.join(self.work_dir,f"isosurface-{n}.png")
+            writer.SetFileName(fpath)
+            writer.SetInputConnection(windowToImageFilter.GetOutputPort())
+            writer.Write()
+
+            frame_list.append(fpath)
+
+        looped_frame_list = []
+        loop_count = 3
+        for _ in range(loop_count):
+            for n,png_file in enumerate(frame_list):
+                looped_frame_list.append(png_file)
+
+        duration = 5*loop_count
+        fps = 7
+        time_list = list(np.arange(0,duration,1./fps))
+        img_dict = {a:f for a,f in zip(time_list,looped_frame_list)}
+
+        def make_frame(t):
+            fpath= img_dict[t]
+            im = PIL.Image.open(fpath)
+            arr = np.asarray(im)
+            return arr
+
+        gif_path = os.path.join(work_dir,f'ani.gif')
+        video_file = os.path.join(work_dir,f"ani.mp4")
+        clip = editor.VideoClip(make_frame, duration=duration)
+        clip.write_gif(gif_path, fps=fps)
+        clip.write_videofile(video_file, fps=fps)
+
+    def setup_2d_slices_pipeline(self):
         
         maskReader = vtk.vtkNIFTIImageReader()
         maskReader.SetFileName(self.mask_file)
@@ -120,7 +291,7 @@ class NiftiVisualizer(object):
         self.maskReader = maskReader
         self.imageReader = imageReader
 
-    def render(self,sliceOrientation,sliceIndex):
+    def render_2d_slices(self,sliceOrientation,sliceIndex):
 
         extent = np.array(self.maskReader.GetDataSpacing())
         spacing = np.array(self.maskReader.GetDataSpacing())
@@ -207,14 +378,15 @@ if __name__ == "__main__":
     os.makedirs(work_dir,exist_ok=True)
 
     inst = NiftiVisualizer(image_file,mask_file,work_dir)
-    inst.setup_pipeline()
+    inst.gen_isosurface()
+    inst.setup_2d_slices_pipeline()
 
     png_list = []
     for x in range(3):
         sliceMaxArr = inst.maskReader.GetDataExtent()[1::2]
         sliceMax = sliceMaxArr[x]
-        for y in np.linspace(0,sliceMax,50):
-            png_file = inst.render(x,int(y))
+        for y in np.linspace(0,sliceMax,5):
+            png_file = inst.render_2d_slices(x,int(y))
             png_list.append(png_file)
 
     html_file = os.path.join(work_dir,'test.html')
