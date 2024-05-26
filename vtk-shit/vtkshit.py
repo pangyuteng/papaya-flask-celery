@@ -342,30 +342,27 @@ class NiftiVisualizer(object):
         print("GetDataSpacing",self.maskReader.GetDataSpacing())
         print("GetDataExtent",self.maskReader.GetDataExtent())
         print("GetInformation",self.maskReader.GetInformation())
+        #print("center",center)
         """
+        positionOffset = 0
         if sliceOrientation == 0:
-
             mynormal = list(self.maskReader.GetDataDirection())[0:3]
-            #sliceIndex
-            myorigin = self.maskReader.GetDataOrigin()
+            myorigin = np.array(self.maskReader.GetDataOrigin())+np.array(mynormal)*sliceIndex
             center = self.imageSlice.GetCenter()
             viewup = list(self.maskReader.GetDataDirection())[6:]
-            position = 1000,center[1],center[2]
-            print("center",center)
+            position = myorigin[0]+positionOffset,center[1],center[2]
         elif sliceOrientation == 1:
             mynormal = list(self.maskReader.GetDataDirection())[3:6]
-            myorigin = self.maskReader.GetDataOrigin()
+            myorigin = np.array(self.maskReader.GetDataOrigin())+np.array(mynormal)*sliceIndex
             center = self.imageSlice.GetCenter()
             viewup = list(self.maskReader.GetDataDirection())[6:]
-            position = center[0],1000,center[2]
-            print("center",center)
+            position = center[0],myorigin[1]+positionOffset,center[2]
         elif sliceOrientation == 2:
             mynormal = list(self.maskReader.GetDataDirection())[6:]
-            myorigin = self.maskReader.GetDataOrigin()
+            myorigin = np.array(self.maskReader.GetDataOrigin())+np.array(mynormal)*sliceIndex
             center = self.imageSlice.GetCenter()
             viewup = (0,-1,0)
-            position = center[0],center[1],1000
-            print("center",center)
+            position = center[0],center[1],myorigin[2]+positionOffset
         else:
             raise ValueError()
         
@@ -381,7 +378,7 @@ class NiftiVisualizer(object):
         windowToImageFilter.Update()
 
         writer = vtk.vtkPNGWriter()
-        fpath = os.path.join(work_dir,f"ok-{sliceOrientation}.png")
+        fpath = os.path.join(work_dir,f"ok-{sliceOrientation}-{sliceIndex}.png")
         writer.SetFileName(fpath)
         writer.SetInputConnection(windowToImageFilter.GetOutputPort())
         writer.Write()
@@ -395,9 +392,10 @@ if __name__ == "__main__":
     inst = NiftiVisualizer(image_file,mask_file,work_dir)
     inst.setup_pipeline()
     for x in range(3):
-        inst.render(x)
-
-
+        sliceMaxArr = inst.maskReader.GetDataExtent()[1::2]
+        sliceMax = sliceMaxArr[x]
+        for y in np.linspace(0,sliceMax,20):
+            inst.render(x,float(int(y)))
 
 '''
 
