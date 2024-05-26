@@ -344,7 +344,7 @@ class NiftiVisualizer(object):
         print("GetInformation",self.maskReader.GetInformation())
         #print("center",center)
         """
-        positionOffset = 0
+        positionOffset = 1000
         if sliceOrientation == 0:
             mynormal = list(self.maskReader.GetDataDirection())[0:3]
             myorigin = np.array(self.maskReader.GetDataOrigin())+np.array(mynormal)*sliceIndex
@@ -395,7 +395,7 @@ if __name__ == "__main__":
         sliceMaxArr = inst.maskReader.GetDataExtent()[1::2]
         sliceMax = sliceMaxArr[x]
         for y in np.linspace(0,sliceMax,20):
-            inst.render(x,float(int(y)))
+            inst.render(x,int(y))
 
 '''
 
