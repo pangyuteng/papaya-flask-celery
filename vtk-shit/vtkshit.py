@@ -21,6 +21,28 @@ class NiftiVisualizer(object):
         self.width = 1000
         self.height = 1000
         self.background = (1.0, 1.0, 1.0)
+        self.maskLut = None
+        self.setup_mask_lut()
+        
+    def setup_mask_lut(self,maskLut=None):
+        if maskLut is None:
+            maskLut = vtk.vtkLookupTable()
+            maskLut.SetValueRange(0,8)
+            maskLut.SetNumberOfTableValues(9)
+            maskLut.SetTableRange(0,8)
+            maskLut.SetTableValue(0,0,0,0,0)
+            maskLut.SetTableValue(1,1,0,0,1)
+            maskLut.SetTableValue(2,0,1,0,1)
+            maskLut.SetTableValue(3,0,0,1,1)
+            maskLut.SetTableValue(4,1,1,0,1)
+            maskLut.SetTableValue(5,0,1,1,1)
+            maskLut.SetTableValue(6,1,0,1,1)
+            maskLut.SetTableValue(7,0.5,0.5,0,1)
+            maskLut.SetTableValue(8,0,0.5,0.5,1)
+
+            maskLut.SetRampToLinear()
+            maskLut.Build()
+        self.maskLut = maskLut
 
     def setup_pipeline(self):
         
@@ -29,25 +51,9 @@ class NiftiVisualizer(object):
         maskReader.Update()
 
         myPlane = vtk.vtkPlane()
-        maskLut = vtk.vtkLookupTable()
-        maskLut.SetValueRange(0,8)
-        maskLut.SetNumberOfTableValues(9)
-        maskLut.SetTableRange(0,8)
-        maskLut.SetTableValue(0,0,0,0,0)
-        maskLut.SetTableValue(1,1,0,0,1)
-        maskLut.SetTableValue(2,0,1,0,1)
-        maskLut.SetTableValue(3,0,0,1,1)
-        maskLut.SetTableValue(4,1,1,0,1)
-        maskLut.SetTableValue(5,0,1,1,1)
-        maskLut.SetTableValue(6,1,0,1,1)
-        maskLut.SetTableValue(7,0.5,0.5,0,1)
-        maskLut.SetTableValue(8,0,0.5,0.5,1)
-
-        maskLut.SetRampToLinear()
-        maskLut.Build()
 
         maskColorMapper = vtk.vtkImageMapToColors()
-        maskColorMapper.SetLookupTable(maskLut)
+        maskColorMapper.SetLookupTable(self.maskLut)
         maskColorMapper.SetInputConnection(maskReader.GetOutputPort())
 
         if False:
