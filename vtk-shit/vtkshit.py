@@ -233,6 +233,13 @@ class NiftiVisualizer(object):
         self.image_file = image_file
         self.mask_file = mask_file
         self.work_dir = work_dir
+        self.colorWindow = 1500 # lung window 1500 level -600
+        self.colorLevel = -600
+        self.maskOpacity = 0.5
+        self.imageOpacity = 1.0
+        self.width = 1000
+        self.height = 1000
+        self.background = (1.0, 1.0, 1.0)
 
     def setup_pipeline(self):
         
@@ -240,21 +247,7 @@ class NiftiVisualizer(object):
         maskReader.SetFileName(self.mask_file)
         maskReader.Update()
 
-        print("GetDataDirection",maskReader.GetDataDirection())
-        print("GetDataOrigin",maskReader.GetDataOrigin())
-        print("GetDataSpacing",maskReader.GetDataSpacing())
-        print("GetDataExtent",maskReader.GetDataExtent())
-        print("----")
-        mynormal = list(maskReader.GetDataDirection())[6:]
-        myorigin = maskReader.GetDataOrigin()
-
         myPlane = vtk.vtkPlane()
-        mynormal = (0,0,1)
-        myPlane.SetOrigin(myorigin)
-        myPlane.SetNormal(mynormal)
-        print('myorigin',myorigin)        
-        print('mynormal',mynormal)
-
         maskLut = vtk.vtkLookupTable()
         maskLut.SetValueRange(0,8)
         maskLut.SetNumberOfTableValues(9)
@@ -286,17 +279,15 @@ class NiftiVisualizer(object):
         maskSlice = vtk.vtkImageSlice()
         maskSlice.SetMapper(maskMapper)
         maskSlice.GetProperty().SetInterpolationTypeToNearest()
-        maskSlice.GetProperty().SetOpacity(0.5)
+        maskSlice.GetProperty().SetOpacity(self.maskOpacity)
 
         imageReader = vtk.vtkNIFTIImageReader()
         imageReader.SetFileName(self.image_file)
         imageReader.Update()
-        
+
         imageColorMapper = vtk.vtkImageMapToWindowLevelColors()
-        colorWindow = 1500 # lung window 1500 level -600
-        colorLevel = -600
-        imageColorMapper.SetWindow(colorWindow)
-        imageColorMapper.SetLevel(colorLevel)
+        imageColorMapper.SetWindow(self.colorWindow)
+        imageColorMapper.SetLevel(self.colorLevel)
         imageColorMapper.SetInputConnection(imageReader.GetOutputPort())
 
         imageMapper = vtk.vtkImageResliceMapper()
@@ -306,77 +297,83 @@ class NiftiVisualizer(object):
         imageSlice = vtk.vtkImageSlice()
         imageSlice.SetMapper(imageMapper)
         imageSlice.GetProperty().SetInterpolationTypeToNearest()
-        imageSlice.GetProperty().SetOpacity(1.0)
-        center = imageSlice.GetCenter()
-        print("center",center)
+        imageSlice.GetProperty().SetOpacity(self.imageOpacity)
 
         imageStack = vtk.vtkImageStack()
         imageStack.AddImage(imageSlice)
         imageStack.AddImage(maskSlice)
 
+
+        renderer = vtk.vtkRenderer()
+        renderWindow = vtk.vtkRenderWindow()
+        renderWindow.SetSize(self.width,self.height)
+
+        renderWindow.SetOffScreenRendering(1)
+        renderWindow.AddRenderer(renderer)
+
+        renderer.AddActor(imageStack)
+
+        renderer.SetBackground(self.background)
+
+        camera = renderer.MakeCamera()
+        renderer.SetActiveCamera(camera)
+        if False:
+            print("GetViewUp",camera.GetViewUp())
+            print("GetPosition",camera.GetPosition())
+            print("GetFocalPoint",camera.GetFocalPoint())
+            print("GetSize",renderWindow.GetSize())
+            print("GetScreenSize",renderWindow.GetScreenSize())
+
+        renderWindow.Render()
+        self.camera = camera
+        self.renderWindow = renderWindow
+        self.myPlane = myPlane
+        self.imageSlice = imageSlice
+        self.maskReader = maskReader
+        self.imageReader = imageReader
+
+    def render(self,sliceOrientation,sliceIndex):
+        """
+        print(sliceOrientation,'----')
+        print(dir(self.maskReader))
         
-        self.viewer_type = "vtkRenderer"
+        print("GetDataDirection",self.maskReader.GetDataDirection())
+        print("GetDataOrigin",self.maskReader.GetDataOrigin())
+        print("GetDataSpacing",self.maskReader.GetDataSpacing())
+        print("GetDataExtent",self.maskReader.GetDataExtent())
+        print("GetInformation",self.maskReader.GetInformation())
+        """
+        if sliceOrientation == 0:
 
-        if self.viewer_type == "vtkImageViewer":
-            width,height = 512,512
-            viewer = vtk.vtkImageViewer2() 
-            viewer.SetInputConnection(imageReader.GetOutputPort())
-            
-            viewer.SetSliceOrientation(0)
-            viewer.SetSlice(22)
-            viewer.SetColorWindow(1500)
-            viewer.SetColorLevel(-600)
-            viewer.GetRenderWindow().SetSize(width,height)
-            viewer.GetRenderer().SetBackground(1.0, 1.0, 1.0)
-            
-            viewer.GetRenderer().AddActor(maskSlice)
-
-            renderWindow = viewer.GetRenderWindow()
-            renderWindow.Render()
-            self.viewer = viewer
-            
-            self.renderWindow = renderWindow
-            self.maskReader = maskReader
-            self.myPlane = myPlane
-            return
-
-        if self.viewer_type == "vtkRenderer":
-            width,height = 1000,1000
-            renderer = vtk.vtkRenderer()
-            renderWindow = vtk.vtkRenderWindow()
-            renderWindow.SetSize(width,height)
-
-            renderWindow.SetOffScreenRendering(1)
-            renderWindow.AddRenderer(renderer)
-
-            renderer.AddActor(imageStack)
-
-            renderer.SetBackground(1.0, 1.0, 1.0)
-            if False:
-
-                camera = renderer.MakeCamera()
-                camera.SetViewUp(0,-1,0)
-                camera.SetPosition(center[0],center[1],1000)
-                camera.SetFocalPoint(center)
-                renderer.SetActiveCamera(camera)
-
-                print("GetViewUp",camera.GetViewUp())
-                print("GetPosition",camera.GetPosition())
-                print("GetFocalPoint",camera.GetFocalPoint())
-                print("GetSize",renderWindow.GetSize())
-                print("GetScreenSize",renderWindow.GetScreenSize())
-
-            renderWindow.Render()
-            self.renderWindow = renderWindow
-            self.maskReader = maskReader
-            self.myPlane = myPlane
-            return
-    def render(self,idx,myorigin,mynormal):
-        if self.viewer_type == "vtkRenderer":
-            self.myPlane.SetOrigin(myorigin)
-            self.myPlane.SetNormal(mynormal)
-        if self.viewer_type == "vtkImageViewer":
-            self.viewer.SetSlice(idx)
+            mynormal = list(self.maskReader.GetDataDirection())[0:3]
+            #sliceIndex
+            myorigin = self.maskReader.GetDataOrigin()
+            center = self.imageSlice.GetCenter()
+            viewup = list(self.maskReader.GetDataDirection())[6:]
+            position = 1000,center[1],center[2]
+            print("center",center)
+        elif sliceOrientation == 1:
+            mynormal = list(self.maskReader.GetDataDirection())[3:6]
+            myorigin = self.maskReader.GetDataOrigin()
+            center = self.imageSlice.GetCenter()
+            viewup = list(self.maskReader.GetDataDirection())[6:]
+            position = center[0],1000,center[2]
+            print("center",center)
+        elif sliceOrientation == 2:
+            mynormal = list(self.maskReader.GetDataDirection())[6:]
+            myorigin = self.maskReader.GetDataOrigin()
+            center = self.imageSlice.GetCenter()
+            viewup = (0,-1,0)
+            position = center[0],center[1],1000
+            print("center",center)
+        else:
+            raise ValueError()
+        
+        self.myPlane.SetOrigin(myorigin)
+        self.myPlane.SetNormal(mynormal)
+        self.camera.SetViewUp(viewup)
+        self.camera.SetPosition(position)
+        self.camera.SetFocalPoint(center)
 
         self.renderWindow.Render()
         windowToImageFilter = vtk.vtkWindowToImageFilter()
@@ -384,7 +381,7 @@ class NiftiVisualizer(object):
         windowToImageFilter.Update()
 
         writer = vtk.vtkPNGWriter()
-        fpath = os.path.join(work_dir,f"ok-{idx}.png")
+        fpath = os.path.join(work_dir,f"ok-{sliceOrientation}.png")
         writer.SetFileName(fpath)
         writer.SetInputConnection(windowToImageFilter.GetOutputPort())
         writer.Write()
@@ -397,17 +394,9 @@ if __name__ == "__main__":
     os.makedirs(work_dir,exist_ok=True)
     inst = NiftiVisualizer(image_file,mask_file,work_dir)
     inst.setup_pipeline()
-    mynormal = (0,0,1)
-    if inst.viewer_type == "vtkRenderer":
-        inst.render(0,(0,0,0),mynormal)
-        inst.render(10,(0,0,100),mynormal)
-        inst.render(20,(0,0,150),mynormal)
-        inst.render(30,(0,0,300),mynormal)
-    if inst.viewer_type == "vtkImageViewer":
-        inst.render(0,(0,0,0),mynormal)
-        inst.render(128,(0,0,100),mynormal)
-        inst.render(256,(0,0,150),mynormal)
-        inst.render(512,(0,0,300),mynormal)
+    for x in range(3):
+        inst.render(x)
+
 
 
 '''
