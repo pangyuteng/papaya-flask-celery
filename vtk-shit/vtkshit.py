@@ -134,9 +134,11 @@ class NiftiVisualizer(object):
             viewup = viewup*-1
 
         #
-        # reslicing via `vtkImageResliceMapper` does not change 
-        # scene location for `vtkImageSlice`...?
-        # but visible slice is changing.
+        # scene location for `vtkImageSlice` is fixed
+        # reslicing via `vtkImageResliceMapper` sets other slices to be invisible
+        # thus making slice of interest visible
+        # therefore, we need to change camera position and focalpoint 
+        # so renderwindow have a fixed size of the resizsed image.
         #
         sliceOrigin = origin+sliceNormal*spacing*sliceIndex
         self.myPlane.SetOrigin(sliceOrigin)
@@ -195,9 +197,12 @@ if __name__ == "__main__":
     image_file = sys.argv[1]
     mask_file = sys.argv[2]
     work_dir = sys.argv[3]
+
     os.makedirs(work_dir,exist_ok=True)
+
     inst = NiftiVisualizer(image_file,mask_file,work_dir)
     inst.setup_pipeline()
+
     png_list = []
     for x in range(3):
         sliceMaxArr = inst.maskReader.GetDataExtent()[1::2]
@@ -205,6 +210,7 @@ if __name__ == "__main__":
         for y in np.linspace(0,sliceMax,20):
             png_file = inst.render(x,int(y))
             png_list.append(png_file)
+
     html_file = os.path.join(work_dir,'test.html')
     with open(html_file,'w') as f:
         content = Environment().from_string(HTML).render(png_list=png_list)
