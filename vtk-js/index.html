@@ -1,0 +1,77 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- <script type="text/javascript" src="https://unpkg.com/vtk.js@8.3.3/dist/vtk.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vtk.js@30.5.1/vtk.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@itk-wasm/dicom@7.0.0/dist/pipelines/apply-presentation-state-to-image.min.js"></script>
+    <title>Vtk.js in div</title>
+  </head>
+<body>
+  <header>
+    <h1>Example to display vtk.js renderer in a specific div</h1>
+  </header>
+  <script type="text/javascript">
+    //Select div for rendering
+    const vtkRenderScreen = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance({
+      container: document.querySelector('#vtk-renderer'),
+      background: [0.,0.,0.]
+    });
+    var renderer = vtkRenderScreen.getRenderer();
+    var renderWindow = vtkRenderScreen.getRenderWindow();
+    var interactor = vtkRenderScreen.getRenderWindow().getInteractor();
+    var reader = vtk.IO.Misc.vtkITKImageReader.newInstance();
+    
+    var camera = renderer.getActiveCamera();
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+
+    renderer.addActor(actor);
+    renderer.resetCamera();
+
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+
+    /*
+    actor_rul.setPosition(-150,-200,-150);
+    camera.setPosition(0,400,0);
+    camera.setFocalPoint(0,0,0);// [-40, 40, -10, 10, 0, 35]
+    camera.setClippingRange(-1000,1000);
+    camera.setDirectionOfProjection(0,-1,0);
+    camera.setViewUp(0,0,1);
+
+    console.log("camera info:");
+    console.log(camera.getPosition());
+    console.log(camera.getFocalPoint());
+    console.log(camera.getClippingRange());
+    console.log(camera.getDirectionOfProjection());
+    console.log(camera.getViewUp());
+    */
+    renderWindow.render();
+
+    console.log("actor info:");
+    console.log(actor.getPosition());
+    console.log(actor.getCenter());
+    console.log(actor.getBounds());
+
+  </script>
+  <section>
+    <div class="container-flow">
+      <div class="row">
+        <div id="vtk-renderer" class="col-12 col-sm-4" style="height: 200px; padding: 0px;"></div>
+
+      </div>
+    </div>
+  </section>
+</body>
+</html>
