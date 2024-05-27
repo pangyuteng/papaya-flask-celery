@@ -9,6 +9,20 @@ import pdfkit
 import PIL
 from moviepy import editor
 
+HTML_TEMPLATE = """
+<html>
+<head>
+</head>
+<body>
+{% for png_file in png_list %}
+<img src="{{ png_file }}"><br>
+{{png_file}}<br>
+{% endfor %}
+</body>
+</html>
+"""
+
+
 class NiftiVisualizer(object):
     def __init__(self,image_file,mask_file,work_dir):
         self.image_file = image_file
@@ -361,18 +375,36 @@ class NiftiVisualizer(object):
         writer.Write()
         return os.path.abspath(png_file)
 
-HTML = """
-<html>
-<head>
-</head>
-<body>
-{% for png_file in png_list %}
-<img src="{{ png_file }}"><br>
-{{png_file}}<br>
-{% endfor %}
-</body>
-</html>
-"""
+    def gen_pdf(self):
+
+        iso_file_list = self.gen_isosurface()
+        self.setup_2d_slices_pipeline()
+
+        png_dict = {}
+        for x in range(3):
+            sliceMaxArr = self.maskReader.GetDataExtent()[1::2]
+            sliceMax = sliceMaxArr[x]
+            png_dict[x]=[]
+            for y in np.linspace(0,sliceMax,5):
+                png_file = self.render_2d_slices(x,int(y))
+                png_dict[x].append(png_file)
+
+        png_list = []
+        png_list.append(iso_file_list[0]) # iso
+        png_list.append(png_dict[0][1]) # sagittal
+        png_list.append(png_dict[0][3]) # sagittal
+        png_list.append(png_dict[1][2]) # coronal
+        png_list.append(png_dict[2][2]) # axial
+
+        html_file = os.path.join(self.work_dir,'test.html')
+        pdf_file = os.path.join(self.work_dir,'test.pdf')
+
+        with open(html_file,'w') as f:
+            content = Environment().from_string(HTML_TEMPLATE).render(png_list=png_list)
+            f.write(content)
+        
+        options = {'enable-local-file-access': None}
+        pdfkit.from_file(html_file, pdf_file, options=options)
 
 
 if __name__ == "__main__":
@@ -384,46 +416,14 @@ if __name__ == "__main__":
     os.makedirs(work_dir,exist_ok=True)
 
     inst = NiftiVisualizer(image_file,mask_file,work_dir)
-    iso_file_list = inst.gen_isosurface()
-
-    inst.setup_2d_slices_pipeline()
-
-    png_dict = {}
-    for x in range(3):
-        sliceMaxArr = inst.maskReader.GetDataExtent()[1::2]
-        sliceMax = sliceMaxArr[x]
-        png_dict[x]=[]
-        for y in np.linspace(0,sliceMax,5):
-            png_file = inst.render_2d_slices(x,int(y))
-            png_dict[x].append(png_file)
-
-    png_list = []
-    png_list.append(iso_file_list[0]) # iso
-    png_list.append(png_dict[0][1]) # sagittal
-    png_list.append(png_dict[0][3]) # sagittal
-    png_list.append(png_dict[1][2]) # coronal
-    png_list.append(png_dict[2][2]) # axial
-    #png_list = [os.path.basename(x) for x in png_list]
-
-    html_file = os.path.join(work_dir,'test.html')
-    pdf_file = os.path.join(work_dir,'test.pdf')
-    with open(html_file,'w') as f:
-        content = Environment().from_string(HTML).render(png_list=png_list)
-        f.write(content)
-    
-    options = {'enable-local-file-access': None}
-    pdfkit.from_file(html_file, pdf_file, options=options)
+    inst.gen_pdf()
 
 '''
-
-axial, sagittal rlung, llung, coronal
-no overlay
-with overlay
 
 docker run -it -u $(id -u):$(id -g) -v /mnt:/mnt \
   -w $PWD pangyuteng/dcm:latest bash
 
-python vtkshit.py \
+python vtk_utils.py \
     /mnt/hd1/papaya-flask-celery/papaya-gii/tlc.nii.gz \
     /mnt/hd1/papaya-flask-celery/papaya-gii/merged.nii.gz tmp
 
