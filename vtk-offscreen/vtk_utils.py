@@ -34,7 +34,10 @@ class NiftiVisualizer(object):
         self.imageOpacity = 1.0
         self.width = 1000
         self.height = 1000
-        self.background = (1.0, 1.0, 1.0)
+        self.background_white = (1.0, 1.0, 1.0)
+        self.background_black = (0.0, 0.0, 0.0)
+        self.depth = 512
+        self.angle_factor = 0.375
         self.maskLut = None
         self.setup_mask_lut()
         
@@ -146,10 +149,10 @@ class NiftiVisualizer(object):
         for actor in mylist:
             renderer.AddActor(actor)
 
-        renderer.SetBackground(self.background)
+        renderer.SetBackground(self.background_white)
 
         camera = renderer.MakeCamera()
-        camera.SetPosition(0,0,800)
+        camera.SetPosition(0,0,self.depth)
         camera.SetFocalPoint(center)
 
         renderer.SetActiveCamera(camera)
@@ -291,7 +294,7 @@ class NiftiVisualizer(object):
 
         renderer.AddActor(imageStack)
 
-        renderer.SetBackground(self.background)
+        renderer.SetBackground(self.background_black)
 
         camera = renderer.MakeCamera()
         renderer.SetActiveCamera(camera)
@@ -318,7 +321,7 @@ class NiftiVisualizer(object):
         origin = np.array(self.maskReader.GetDataOrigin())
         direction = np.array(self.maskReader.GetDataDirection())
         center = np.array(self.imageSlice.GetCenter())
-        positionOffset = 1000
+
         if sliceOrientation == 0:
             sliceNormal = direction[0:3]
             viewup = direction[6:]
@@ -344,17 +347,20 @@ class NiftiVisualizer(object):
         self.imageSlice.Update()
         self.maskSlice.Update()
 
-        positionOffset = 1000
         if sliceOrientation == 0:
-            position = sliceOrigin[0]+positionOffset,center[1],center[2]
+            position = sliceOrigin[0]+self.depth,center[1],center[2]
             focalPoint = (sliceOrigin[0],center[1],center[2])
         elif sliceOrientation == 1:
-            position = center[0],sliceOrigin[1]+positionOffset,center[2]
+            position = center[0],sliceOrigin[1]+self.depth,center[2]
             focalPoint = (center[0],sliceOrigin[1],center[2])
         elif sliceOrientation == 2:
-            position = center[0],center[1],sliceOrigin[2]+positionOffset
+            position = center[0],center[1],sliceOrigin[2]+self.depth
             focalPoint = (center[0],center[1],sliceOrigin[2])
-        
+
+        angle = self.angle_factor*(2*np.arctan((self.height/2)/self.depth))
+        angle *= 180/np.pi
+
+        self.camera.SetViewAngle(angle)
         self.camera.SetViewUp(viewup)
         self.camera.SetPosition(position)
         self.camera.SetFocalPoint(focalPoint)
