@@ -5,7 +5,7 @@ import numpy as np
 import vtk
 from jinja2 import Environment
 
-import imageio
+import pdfkit
 import PIL
 from moviepy import editor
 
@@ -44,7 +44,7 @@ class NiftiVisualizer(object):
             maskLut.Build()
         self.maskLut = maskLut
 
-    def gen_isosurface(self):
+    def gen_isosurface(self,animation=False):
 
         reader = vtk.vtkNIFTIImageReader()
         reader.SetFileName(self.mask_file)
@@ -185,12 +185,18 @@ class NiftiVisualizer(object):
 
             writer = vtk.vtkPNGWriter()
             
-            fpath = os.path.join(self.work_dir,f"isosurface-{n}.png")
-            writer.SetFileName(fpath)
+            png_file = os.path.join(self.work_dir,f"isosurface-{n}.png")
+            png_file = os.path.abspath(png_file)
+            writer.SetFileName(png_file)
             writer.SetInputConnection(windowToImageFilter.GetOutputPort())
             writer.Write()
 
-            frame_list.append(fpath)
+            frame_list.append(png_file)
+            if animation is False and n > 0:
+                break
+
+        if animation is False:
+            return frame_list
 
         looped_frame_list = []
         loop_count = 3
@@ -353,7 +359,7 @@ class NiftiVisualizer(object):
         writer.SetFileName(png_file)
         writer.SetInputConnection(windowToImageFilter.GetOutputPort())
         writer.Write()
-        return os.path.basename(png_file)
+        return os.path.abspath(png_file)
 
 HTML = """
 <html>
@@ -378,21 +384,35 @@ if __name__ == "__main__":
     os.makedirs(work_dir,exist_ok=True)
 
     inst = NiftiVisualizer(image_file,mask_file,work_dir)
-    inst.gen_isosurface()
+    iso_file_list = inst.gen_isosurface()
+
     inst.setup_2d_slices_pipeline()
 
-    png_list = []
+    png_dict = {}
     for x in range(3):
         sliceMaxArr = inst.maskReader.GetDataExtent()[1::2]
         sliceMax = sliceMaxArr[x]
+        png_dict[x]=[]
         for y in np.linspace(0,sliceMax,5):
             png_file = inst.render_2d_slices(x,int(y))
-            png_list.append(png_file)
+            png_dict[x].append(png_file)
+
+    png_list = []
+    png_list.append(iso_file_list[0]) # iso
+    png_list.append(png_dict[0][1]) # sagittal
+    png_list.append(png_dict[0][3]) # sagittal
+    png_list.append(png_dict[1][2]) # coronal
+    png_list.append(png_dict[2][2]) # axial
+    #png_list = [os.path.basename(x) for x in png_list]
 
     html_file = os.path.join(work_dir,'test.html')
+    pdf_file = os.path.join(work_dir,'test.pdf')
     with open(html_file,'w') as f:
         content = Environment().from_string(HTML).render(png_list=png_list)
         f.write(content)
+    
+    options = {'enable-local-file-access': None}
+    pdfkit.from_file(html_file, pdf_file, options=options)
 
 '''
 
