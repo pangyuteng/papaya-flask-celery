@@ -1,0 +1,30 @@
+<script>
+function sandboxChecked(){
+    return document.getElementById("sandbox").checked;
+}
+</script>
+<br><br>
+<form
+    type="submit" 
+    hx-get="/login" 
+    hx-target="#formResponse"
+    hx-vals='js:{sandbox:sandboxChecked()}'
+    hx-swap="#formResponse">
+
+    <label class="form-check-label" for="username">username:</label><br>
+    <input type="text" name="username" id="username"><br>
+
+    <label class="form-check-label" for="password">password:</label><br>
+    <input type="password" name="password" id="password"><br>
+
+    <label class="form-check-label" for="sandbox">sandbox:</label><br>
+    <input type="checkbox" id="sandbox" checked><br>
+
+    <label class="form-check-label" for="ticker">ticker:</label><br>
+    <input type="text" name="ticker" placeholder="SPX" id="ticker"><br>
+    <small id="tickerHelp" class="form-text text-muted">single ticker, example: SPX</small><br>
+
+    <button type="submit" class="btn btn-primary">update</button>
+
+</form>
+<div id="formResponse"></div>
