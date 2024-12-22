@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Papaya</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+    <link rel="stylesheet" type="text/css" href="http://rii.uthscsa.edu/mango/papaya/papaya.css?version=0.6.5&build=692" />
+    <script type="text/javascript" src="http://rii.uthscsa.edu/mango/papaya/papaya.js?version=0.6.5&build=692"></script>
+    <link rel="stylesheet" type="text/css" href="http://rii.uthscsa.edu/mango/papaya/papaya.css" />
+    <script type="text/javascript" src="http://rii.uthscsa.edu/mango/papaya/papaya.js"></script>
+    -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='papaya.css')}}" />
+    <script type="text/javascript" src="{{ url_for('static', filename='papaya.js')}}"></script>	
+    
+    <script type="text/javascript">
+        var params = [];
+        params["images"] = ["{{ url_for('static', filename=volume_file)}}"];
+        params["example.nii"] = {"min": 50, "max": 1000};
+        params["smoothDisplay"] = false;
+        params["mainView"] = "coronal";        
+    </script>
+
+</head>
+<body>
+    hello world<br>
+    <div class="papaya" data-params="params"></div>
+</body>
+</html>
