@@ -352,10 +352,12 @@ class NiftiVisualizer(object):
             position = center[0],center[1],sliceOrigin[2]+self.depth
             focalPoint = (center[0],center[1],sliceOrigin[2])
 
-        angle = self.angle_factor*(2*np.arctan((self.height/2)/self.depth))
-        angle *= 180/np.pi
+        # https://discourse.vtk.org/t/vtkcamera-angular-ranges-ranges/9322/4
 
-        self.camera.SetViewAngle(angle)
+        # angle = self.angle_factor*(2*np.arctan((self.height/2)/self.depth))
+        # angle *= 180/np.pi
+        # self.camera.SetViewAngle(angle)
+        self.camera.SetParallelProjection(True)
         self.camera.SetViewUp(viewup)
         self.camera.SetPosition(position)
         self.camera.SetFocalPoint(focalPoint)
