@@ -29,7 +29,7 @@ class NiftiVisualizer(object):
         self.background_white = (1.0, 1.0, 1.0)
         self.background_black = (0.0, 0.0, 0.0)
         self.depth = 512
-        self.angle_factor = 0.375
+        self.angle_factor = 0.5
         self.maskLut = None
         self.setup_mask_lut()
         '''
@@ -97,7 +97,7 @@ class NiftiVisualizer(object):
         mapper.ScalarVisibilityOff()
         actor.GetProperty().SetColor((1,1,1))
         actor.GetProperty().SetOpacity(1)
-        actor.RotateX(270)
+        actor.RotateX(90)
         center = actor.GetCenter()
         
         mylist = []
@@ -131,7 +131,7 @@ class NiftiVisualizer(object):
 
             actor.GetProperty().SetColor(color)
             actor.GetProperty().SetOpacity(opacity)
-            actor.RotateX(270)
+            actor.RotateX(90)
             mylist.append(actor)
         
         renderer = vtk.vtkRenderer()
@@ -147,7 +147,7 @@ class NiftiVisualizer(object):
         renderer.SetBackground(self.background_white)
 
         camera = renderer.MakeCamera()
-        camera.SetPosition(0,0,self.depth)
+        camera.SetPosition(0,0,-1.0*self.depth)
         camera.SetFocalPoint(center)
 
         renderer.SetActiveCamera(camera)
@@ -320,9 +320,11 @@ class NiftiVisualizer(object):
         if sliceOrientation == 0:
             sliceNormal = direction[0:3]
             viewup = direction[6:]
+            viewup = viewup*-1 # flip
         elif sliceOrientation == 1:
             sliceNormal = direction[3:6]
             viewup = direction[6:]
+            viewup = viewup*-1 # flip
         elif sliceOrientation == 2:
             sliceNormal = direction[6:]
             viewup = direction[3:6]
@@ -349,7 +351,7 @@ class NiftiVisualizer(object):
             position = center[0],sliceOrigin[1]+self.depth,center[2]
             focalPoint = (center[0],sliceOrigin[1],center[2])
         elif sliceOrientation == 2:
-            position = center[0],center[1],sliceOrigin[2]+self.depth
+            position = center[0],center[1],sliceOrigin[2]-1*self.depth
             focalPoint = (center[0],center[1],sliceOrigin[2])
 
         # https://discourse.vtk.org/t/vtkcamera-angular-ranges-ranges/9322/4
