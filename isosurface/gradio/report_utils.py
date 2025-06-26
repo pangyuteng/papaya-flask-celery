@@ -74,6 +74,7 @@ class NiftiVisualizer(object):
         reader.SetFileName(self.mask_file)
         reader.Update()
 
+        # TODO: if ImageDirection is bad then flip
         # imageFlip = vtk.vtkImageFlip()
         # imageFlip.SetFilteredAxis(2)
         # imageFlip.SetInputConnection(reader.GetOutputPort())
