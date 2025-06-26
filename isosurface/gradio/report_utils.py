@@ -29,7 +29,7 @@ class NiftiVisualizer(object):
         self.background_white = (1.0, 1.0, 1.0)
         self.background_black = (0.0, 0.0, 0.0)
         self.depth = 512
-        self.angle_factor = 0.375
+        self.angle_factor = 0.5
         self.maskLut = None
         self.setup_mask_lut()
         '''
@@ -74,6 +74,10 @@ class NiftiVisualizer(object):
         reader.SetFileName(self.mask_file)
         reader.Update()
 
+        # imageFlip = vtk.vtkImageFlip()
+        # imageFlip.SetFilteredAxis(2)
+        # imageFlip.SetInputConnection(reader.GetOutputPort())
+        # imageFlip.Update()
 
         threshold = vtk.vtkImageThreshold()
         threshold.SetInputConnection(reader.GetOutputPort())
@@ -97,7 +101,7 @@ class NiftiVisualizer(object):
         mapper.ScalarVisibilityOff()
         actor.GetProperty().SetColor((1,1,1))
         actor.GetProperty().SetOpacity(1)
-        actor.RotateX(270)
+        actor.RotateX(-90)
         center = actor.GetCenter()
         
         mylist = []
@@ -131,7 +135,7 @@ class NiftiVisualizer(object):
 
             actor.GetProperty().SetColor(color)
             actor.GetProperty().SetOpacity(opacity)
-            actor.RotateX(270)
+            actor.RotateX(-90)
             mylist.append(actor)
         
         renderer = vtk.vtkRenderer()
@@ -346,11 +350,13 @@ class NiftiVisualizer(object):
             position = sliceOrigin[0]+self.depth,center[1],center[2]
             focalPoint = (sliceOrigin[0],center[1],center[2])
         elif sliceOrientation == 1:
-            position = center[0],sliceOrigin[1]+self.depth,center[2]
+            position = center[0],sliceOrigin[1]-1*self.depth,center[2] # -1 fliplr
             focalPoint = (center[0],sliceOrigin[1],center[2])
         elif sliceOrientation == 2:
-            position = center[0],center[1],sliceOrigin[2]+self.depth
+            position = center[0],center[1],sliceOrigin[2]-1*self.depth # -1 fliplr
             focalPoint = (center[0],center[1],sliceOrigin[2])
+
+
 
         angle = self.angle_factor*(2*np.arctan((self.height/2)/self.depth))
         angle *= 180/np.pi
