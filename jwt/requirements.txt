@@ -1,0 +1,2 @@
+Flask
+Flask_JWT_Extended==4.6.0
