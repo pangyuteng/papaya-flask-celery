@@ -1,0 +1,3 @@
+[submodule "trame-slicer/trame-slicer"]
+	path = trame-slicer/trame-slicer
+	url = git@github.com:KitwareMedical/trame-slicer.git
