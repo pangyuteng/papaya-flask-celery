@@ -19,19 +19,19 @@ def create_order():
     process_order.delay(order_id)
 
 @app.task()
-def task_apple(order_id):
-    print(f"task_apple {order_id}")
-    return "apple"
+def task_apple_pie(order_id):
+    print(f"task_apple_pie {order_id}")
+    return "apple pie"
 
 @app.task()
-def task_banana(order_id):
-    print(f"task_banana {order_id}")
-    return "banana"
+def task_banana_pudding(order_id):
+    print(f"task_banana_pudding {order_id}")
+    return "banana pudding"
 
 @app.task()
-def task_orange(order_id):
-    print(f"task_orange {order_id}")
-    return "orange"
+def task_orange_cake(order_id):
+    print(f"task_orange_cake {order_id}")
+    return "orange cake"
 
 @app.task()
 def order_done_notification(product_name):
@@ -42,12 +42,12 @@ def process_order(order_id):
     print(f"process_order {order_id}")
     if order_id in [1,2]:
         jobs = group(
-            chain(task_apple.s(order_id),order_done_notification.s()),
-            chain(task_banana.s(order_id),order_done_notification.s()),
+            chain(task_apple_pie.s(order_id),order_done_notification.s()),
+            chain(task_banana_pudding.s(order_id),order_done_notification.s()),
         )
         jobs.apply_async()
     elif order_id in [3,4]:
-        jobs = chain(task_banana.s(order_id),order_done_notification.s())
+        jobs = chain(task_orange_cake.s(order_id),order_done_notification.s())
         jobs.apply_async()
     elif order_id in [5]:
         pass
