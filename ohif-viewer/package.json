@@ -1,0 +1,21 @@
+{
+  "name": "dicom-viewer",
+  "version": "1.0.0",
+  "description": "DICOM Viewer with OHIF Frontend and Quart Backend",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python app.py",
+    "build": "cd frontend && npm run build",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["dicom", "medical", "viewer", "ohif", "quart"],
+  "author": "",
+  "license": "MIT"
+}

@@ -6,6 +6,7 @@
 #
 # real world complex workflow!
 # https://www.azavea.com/blog/2016/10/20/how-to-build-asynchronous-workflows-geospatial-application/
+# https://element84.com/software-engineering/how-to-build-asynchronous-workflows-geospatial-application/
 #
 # "Celery does not natively support conditional or dynamic task chains. "
 # "We got around this by creating a list of tasks depending on input, and "
