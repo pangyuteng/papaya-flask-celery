@@ -1,0 +1,5 @@
+flask
+celery
+flower
+redis
+gevent

@@ -1,0 +1,13 @@
+pyyaml
+numpy
+pandas
+pydicom
+SimpleITK
+imageio
+scikit-learn
+scikit-image
+scipy
+matplotlib
+seaborn
+pyvista
+jupyter
